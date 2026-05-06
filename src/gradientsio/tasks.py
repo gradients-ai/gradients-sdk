@@ -4,26 +4,23 @@ import time
 from typing import TYPE_CHECKING
 from typing import Any
 
-from gradients.errors import TaskFailed
-from gradients.errors import TaskTimeout
-from gradients.models import ChatTaskRequest
-from gradients.models import CreateTaskResponse
-from gradients.models import CustomDatasetChatTaskRequest
-from gradients.models import CustomDatasetTextTaskRequest
-from gradients.models import DPOTaskRequest
-from gradients.models import EnvironmentTaskRequest
-from gradients.models import GRPOTaskRequest
-from gradients.models import ImageTaskRequest
-from gradients.models import InstructTaskRequest
-from gradients.models import NetworkStatus
-from gradients.models import PriceQuote
-from gradients.models import TaskBreakdown
-from gradients.models import TaskDetails
-from gradients.models import TaskStatus
+from gradientsio.errors import TaskFailed
+from gradientsio.errors import TaskTimeout
+from gradientsio.models import ChatTaskRequest
+from gradientsio.models import CreateTaskResponse
+from gradientsio.models import CustomDatasetChatTaskRequest
+from gradientsio.models import CustomDatasetTextTaskRequest
+from gradientsio.models import DPOTaskRequest
+from gradientsio.models import GRPOTaskRequest
+from gradientsio.models import ImageTaskRequest
+from gradientsio.models import InstructTaskRequest
+from gradientsio.models import PriceQuote
+from gradientsio.models import TaskDetails
+from gradientsio.models import TaskStatus
 
 
 if TYPE_CHECKING:
-    from gradients._transport import Transport
+    from gradientsio._transport import Transport
 
 
 def _price_quote(payload: Any) -> PriceQuote:
@@ -50,9 +47,6 @@ class TrainingTask:
 
     def status(self) -> TaskStatus | str:
         return self.refresh().status
-
-    def breakdown(self) -> TaskBreakdown:
-        return self._tasks.breakdown(self.task_id)
 
     def delete(self) -> None:
         self._tasks.delete(self.task_id)
@@ -123,11 +117,6 @@ class TasksClient:
         response = CreateTaskResponse(**self._transport.post("/v1/tasks/create_image", json=request))
         return TrainingTask(self, _require_task_id(response))
 
-    def create_environment(self, **kwargs: Any) -> TrainingTask:
-        request = EnvironmentTaskRequest(**kwargs)
-        response = CreateTaskResponse(**self._transport.post("/v1/tasks/create_environment", json=request))
-        return TrainingTask(self, _require_task_id(response))
-
     def create_custom_dataset_text(self, **kwargs: Any) -> TrainingTask:
         request = CustomDatasetTextTaskRequest(**kwargs)
         response = CreateTaskResponse(**self._transport.post("/v1/tasks/create_custom_dataset_text", json=request))
@@ -147,9 +136,6 @@ class TasksClient:
     def list(self, *, account_id: str, limit: int = 100, page: int = 1) -> list[TaskDetails]:
         payload = self._transport.get(f"/v1/tasks/account/{account_id}", params={"limit": limit, "page": page})
         return [TaskDetails(**item) for item in payload]
-
-    def breakdown(self, task_id: str) -> TaskBreakdown:
-        return TaskBreakdown(**self._transport.get(f"/v1/tasks/breakdown/{task_id}"))
 
     def delete(self, task_id: str) -> None:
         self._transport.delete(f"/v1/tasks/delete/{task_id}")
@@ -175,5 +161,3 @@ class TasksClient:
         )
         return [TaskDetails(**item) for item in payload]
 
-    def network_status(self) -> NetworkStatus:
-        return NetworkStatus(**self._transport.get("/v1/network/status"))

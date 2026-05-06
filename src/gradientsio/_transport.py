@@ -8,13 +8,13 @@ from typing import Any
 import httpx
 from pydantic import BaseModel
 
-from gradients.errors import APIError
-from gradients.errors import AuthenticationError
-from gradients.errors import AuthorizationError
-from gradients.errors import NetworkError
-from gradients.errors import NotFoundError
-from gradients.errors import RateLimitError
-from gradients.errors import ValidationError
+from gradientsio.errors import APIError
+from gradientsio.errors import AuthenticationError
+from gradientsio.errors import AuthorizationError
+from gradientsio.errors import NetworkError
+from gradientsio.errors import NotFoundError
+from gradientsio.errors import RateLimitError
+from gradientsio.errors import ValidationError
 
 
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
@@ -22,7 +22,7 @@ SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 
 def _sdk_version() -> str:
     try:
-        return version("gradients-sdk")
+        return version("gradientsio")
     except PackageNotFoundError:
         return "0.1.0"
 
@@ -103,17 +103,19 @@ class Transport:
         *,
         json: Any | None = None,
         params: dict[str, Any] | None = None,
+        auth_token: str | None = None,
     ) -> Any:
         method = method.upper()
         url = f"{self.base_url}/{path.lstrip('/')}"
         headers = {
             "Accept": "application/json",
-            "User-Agent": f"gradients-python/{_sdk_version()}",
+            "User-Agent": f"gradientsio-python/{_sdk_version()}",
         }
         if json is not None:
             headers["Content-Type"] = "application/json"
-        if self.api_key:
-            headers["Authorization"] = f"Bearer {self.api_key}"
+        token = auth_token if auth_token is not None else self.api_key
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
 
         attempts = self.max_retries + 1 if method in SAFE_METHODS else 1
         last_error: Exception | None = None
@@ -140,14 +142,20 @@ class Transport:
 
         raise NetworkError(str(last_error) if last_error else "Request failed")
 
-    def get(self, path: str, *, params: dict[str, Any] | None = None) -> Any:
-        return self.request("GET", path, params=params)
+    def get(
+        self,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        auth_token: str | None = None,
+    ) -> Any:
+        return self.request("GET", path, params=params, auth_token=auth_token)
 
-    def post(self, path: str, *, json: Any | None = None) -> Any:
-        return self.request("POST", path, json=json)
+    def post(self, path: str, *, json: Any | None = None, auth_token: str | None = None) -> Any:
+        return self.request("POST", path, json=json, auth_token=auth_token)
 
-    def put(self, path: str, *, json: Any | None = None) -> Any:
-        return self.request("PUT", path, json=json)
+    def put(self, path: str, *, json: Any | None = None, auth_token: str | None = None) -> Any:
+        return self.request("PUT", path, json=json, auth_token=auth_token)
 
-    def delete(self, path: str) -> Any:
-        return self.request("DELETE", path)
+    def delete(self, path: str, *, auth_token: str | None = None) -> Any:
+        return self.request("DELETE", path, auth_token=auth_token)

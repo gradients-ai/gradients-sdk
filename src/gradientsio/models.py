@@ -53,7 +53,6 @@ class TaskType(str, Enum):
     DPO = "DpoTask"
     GRPO = "GrpoTask"
     CHAT = "ChatTask"
-    ENVIRONMENT = "EnvTask"
 
 
 class ImageModelType(str, Enum):
@@ -148,12 +147,6 @@ class GRPOTaskRequest(TaskRequest):
     extra_column: str | None = None
 
 
-class EnvironmentTaskRequest(TaskRequest):
-    ds_repo: str
-    model_repo: str
-    environment_name: str
-
-
 class ImageTaskRequest(TaskRequest):
     model_repo: str
     image_text_pairs: list[ImageTextPair]
@@ -224,45 +217,12 @@ class TaskDetails(SDKModel):
         return bool(status and status.is_failure)
 
 
-class MinerTaskResult(SDKModel):
-    hotkey: str
-    quality_score: float
-    test_loss: float | None = None
-    synth_loss: float | None = None
-    score_reason: str | None = None
-
-
-class TaskBreakdown(SDKModel):
-    id: str
-    miner_results: list[MinerTaskResult] | None = None
-
-
 class PriceQuote(SDKModel):
     amount: float | None = None
     price: float | None = None
     total_price: float | None = None
     currency: str | None = None
     raw: dict[str, Any] | None = None
-
-
-class NetworkStatus(SDKModel):
-    job_can_be_made: bool | None = None
-    number_of_jobs_training: int | None = None
-
-
-class RewardFunctionInfo(SDKModel):
-    reward_id: str
-    name: str | None = None
-    description: str | None = None
-    code: str | None = None
-
-
-class RewardFunctionsResponse(SDKModel):
-    reward_functions: dict[str, RewardFunctionInfo]
-
-
-class AddRewardFunctionResponse(SDKModel):
-    reward_id: str
 
 
 class SchedulerDataset(SDKModel):
@@ -296,13 +256,13 @@ class SchedulerJobRequest(SDKModel):
 
 
 class SchedulerJobResponse(SDKModel):
-    job_id: str
+    id: str
     status: str | None = None
     message: str | None = None
 
 
 class SchedulerJobDetails(SDKModel):
-    job_id: str
+    id: str
     status: str
 
     @property
@@ -324,7 +284,7 @@ class SchedulerTaskResult(SDKModel):
 
 
 class SchedulerJobResults(SDKModel):
-    job_id: str | None = None
+    id: str | None = None
     status: str | None = None
     results: list[SchedulerTaskResult] = Field(default_factory=list)
 

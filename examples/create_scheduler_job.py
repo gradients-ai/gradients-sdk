@@ -1,5 +1,5 @@
-from gradients import GradientsClient
-from gradients import SchedulerDataset
+from gradientsio import GradientsClient
+from gradientsio import SchedulerDataset
 
 
 client = GradientsClient()
@@ -21,7 +21,7 @@ job = client.scheduler.create_job(
     ],
 )
 
-print(f"Created scheduler job: {job.job_id}")
+print(f"Created scheduler job: {job.id}")
 details = job.wait(poll_interval=600)
 print(f"Scheduler status: {details.status}")
 print(f"Latest merged model: {job.results().latest_merged_model_repo}")

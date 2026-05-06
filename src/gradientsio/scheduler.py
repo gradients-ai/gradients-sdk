@@ -4,33 +4,33 @@ import time
 from typing import TYPE_CHECKING
 from typing import Any
 
-from gradients.errors import TaskFailed
-from gradients.errors import TaskTimeout
-from gradients.models import SchedulerJobDetails
-from gradients.models import SchedulerJobRequest
-from gradients.models import SchedulerJobResponse
-from gradients.models import SchedulerJobResults
+from gradientsio.errors import TaskFailed
+from gradientsio.errors import TaskTimeout
+from gradientsio.models import SchedulerJobDetails
+from gradientsio.models import SchedulerJobRequest
+from gradientsio.models import SchedulerJobResponse
+from gradientsio.models import SchedulerJobResults
 
 
 if TYPE_CHECKING:
-    from gradients._transport import Transport
+    from gradientsio._transport import Transport
 
 
 class SchedulerJob:
-    def __init__(self, scheduler: "SchedulerClient", job_id: str, details: SchedulerJobDetails | None = None) -> None:
+    def __init__(self, scheduler: "SchedulerClient", id: str, details: SchedulerJobDetails | None = None) -> None:
         self._scheduler = scheduler
-        self.job_id = job_id
+        self.id = id
         self.details = details
 
     def refresh(self) -> SchedulerJobDetails:
-        self.details = self._scheduler.get(self.job_id)
+        self.details = self._scheduler.get(self.id)
         return self.details
 
     def results(self) -> SchedulerJobResults:
-        return self._scheduler.results(self.job_id)
+        return self._scheduler.results(self.id)
 
     def delete(self) -> None:
-        self._scheduler.delete(self.job_id)
+        self._scheduler.delete(self.id)
 
     def wait(
         self,
@@ -47,11 +47,11 @@ class SchedulerJob:
                 return details
             if details.status == "failed":
                 if raise_on_failure:
-                    raise TaskFailed(f"Scheduler job {self.job_id} failed")
+                    raise TaskFailed(f"Scheduler job {self.id} failed")
                 return details
 
             if timeout is not None and time.monotonic() - started_at >= timeout:
-                raise TaskTimeout(f"Scheduler job {self.job_id} did not finish within {timeout} seconds")
+                raise TaskTimeout(f"Scheduler job {self.id} did not finish within {timeout} seconds")
 
             sleep_for = poll_interval
             if timeout is not None:
@@ -69,21 +69,24 @@ class SchedulerClient:
 
     def create_job(self, **kwargs: Any) -> SchedulerJob:
         request = SchedulerJobRequest(**kwargs)
-        response = SchedulerJobResponse(**self._transport.post("/v1/scheduler/jobs/create", json=request))
-        return SchedulerJob(self, response.job_id)
+        payload = self._transport.post("/v1/scheduler/jobs/create", json=request)
+        if "id" not in payload and "job_id" in payload:
+            payload["id"] = payload.pop("job_id")
+        response = SchedulerJobResponse(**payload)
+        return SchedulerJob(self, response.id)
 
     def list(self) -> list[SchedulerJobDetails]:
         payload = self._transport.get("/v1/scheduler/jobs")
         return [SchedulerJobDetails(**item) for item in payload]
 
-    def get(self, job_id: str) -> SchedulerJobDetails:
-        return SchedulerJobDetails(**self._transport.get(f"/v1/scheduler/jobs/{job_id}"))
+    def get(self, id: str) -> SchedulerJobDetails:
+        return SchedulerJobDetails(**self._transport.get(f"/v1/scheduler/jobs/{id}"))
 
-    def handle(self, job_id: str) -> SchedulerJob:
-        return SchedulerJob(self, job_id)
+    def handle(self, id: str) -> SchedulerJob:
+        return SchedulerJob(self, id)
 
-    def results(self, job_id: str) -> SchedulerJobResults:
-        return SchedulerJobResults(**self._transport.get(f"/v1/scheduler/jobs/{job_id}/results"))
+    def results(self, id: str) -> SchedulerJobResults:
+        return SchedulerJobResults(**self._transport.get(f"/v1/scheduler/jobs/{id}/results"))
 
-    def delete(self, job_id: str) -> None:
-        self._transport.delete(f"/v1/scheduler/jobs/{job_id}")
+    def delete(self, id: str) -> None:
+        self._transport.delete(f"/v1/scheduler/jobs/{id}")
