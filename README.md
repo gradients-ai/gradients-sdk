@@ -262,7 +262,7 @@ boss_battle = client.performance.last_boss_battle()
 
 ## Environment Variables
 
-| Variable | Description | Default |
-| --- | --- | --- |
-| `GRADIENTS_API_KEY` | Gradients API key | None |
-| `GRADIENTS_SESSION_TOKEN` | Session token required for account functions, such as balance checks and public key retrieval | None |
+| Variable | Description |
+| --- | --- |
+| `GRADIENTS_API_KEY` | Gradients API key |
+| `GRADIENTS_SESSION_TOKEN` | Session token required for account functions, such as balance checks and public key retrieval |
