@@ -20,6 +20,9 @@ from gradientsio.models import ImageTextPair
 from gradientsio.models import RewardFunctionReference
 from gradientsio.models import SchedulerDataset
 from gradientsio.models import TaskStatus
+from gradientsio.sampling import GenerationConfig
+from gradientsio.sampling import ModelSampler
+from gradientsio.sampling import load_dataset_rows
 from gradientsio.tasks import TrainingTask
 
 
@@ -31,11 +34,13 @@ __all__ = [
     "ConfigurationError",
     "Datasets",
     "FileFormat",
+    "GenerationConfig",
     "GradientsClient",
     "GradientsError",
     "Gradientsio",
     "ImageModelType",
     "ImageTextPair",
+    "ModelSampler",
     "NetworkError",
     "NotFoundError",
     "RateLimitError",
@@ -47,4 +52,5 @@ __all__ = [
     "TaskType",
     "TrainingTask",
     "ValidationError",
+    "load_dataset_rows",
 ]
