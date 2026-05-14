@@ -154,6 +154,12 @@ class ImageTaskRequest(TaskRequest):
     model_type: ImageModelType | str = ImageModelType.SDXL
 
 
+class ImageZipTaskRequest(TaskRequest):
+    model_repo: str
+    ds: str
+    model_type: ImageModelType | str = ImageModelType.SDXL
+
+
 class CustomDatasetTextTaskRequest(InstructTaskRequest):
     ds_repo: str | None = None
     training_data: str

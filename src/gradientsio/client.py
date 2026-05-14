@@ -27,7 +27,7 @@ class GradientsClient:
         *,
         api_key: str | None = None,
         session_token: str | None = None,
-        timeout: float | httpx.Timeout = 30.0,
+        timeout: float | httpx.Timeout = 60.0,
         max_retries: int = 2,
         http_client: httpx.Client | None = None,
     ) -> None:
@@ -185,14 +185,24 @@ class Gradientsio:
             return self.client.tasks.create_grpo(**payload)
 
         if self.tasktype == TaskType.IMAGE:
+            if "image_text_pairs" in self.extra:
+                payload = {
+                    "model_repo": self.model,
+                    "hours_to_complete": self.hours,
+                    "image_text_pairs": self.extra.pop("image_text_pairs"),
+                    "model_type": self.extra.pop("model_type", "sdxl"),
+                    **self.extra,
+                }
+                return self.client.tasks.create_image(**payload)
+
             payload = {
                 "model_repo": self.model,
                 "hours_to_complete": self.hours,
-                "image_text_pairs": self.extra.pop("image_text_pairs"),
+                "ds": self.extra.pop("ds", self.data.source),
                 "model_type": self.extra.pop("model_type", "sdxl"),
                 **self.extra,
             }
-            return self.client.tasks.create_image(**payload)
+            return self.client.tasks.create_image_zip(**payload)
 
         raise ValueError(f"Unsupported task type: {self.tasktype}")
 

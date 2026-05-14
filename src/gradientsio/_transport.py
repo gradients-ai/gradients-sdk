@@ -82,7 +82,7 @@ class Transport:
         *,
         base_url: str,
         api_key: str | None,
-        timeout: float | httpx.Timeout = 30.0,
+        timeout: float | httpx.Timeout = 60.0,
         max_retries: int = 2,
         client: httpx.Client | None = None,
     ) -> None:

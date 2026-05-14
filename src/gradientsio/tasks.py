@@ -13,6 +13,7 @@ from gradientsio.models import CustomDatasetTextTaskRequest
 from gradientsio.models import DPOTaskRequest
 from gradientsio.models import GRPOTaskRequest
 from gradientsio.models import ImageTaskRequest
+from gradientsio.models import ImageZipTaskRequest
 from gradientsio.models import InstructTaskRequest
 from gradientsio.models import PriceQuote
 from gradientsio.models import TaskDetails
@@ -115,6 +116,11 @@ class TasksClient:
     def create_image(self, **kwargs: Any) -> TrainingTask:
         request = ImageTaskRequest(**kwargs)
         response = CreateTaskResponse(**self._transport.post("/v1/tasks/create_image", json=request))
+        return TrainingTask(self, _require_task_id(response))
+
+    def create_image_zip(self, **kwargs: Any) -> TrainingTask:
+        request = ImageZipTaskRequest(**kwargs)
+        response = CreateTaskResponse(**self._transport.post("/v1/tasks/create_image_zip", json=request))
         return TrainingTask(self, _require_task_id(response))
 
     def create_custom_dataset_text(self, **kwargs: Any) -> TrainingTask:
