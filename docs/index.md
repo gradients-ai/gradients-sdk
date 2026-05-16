@@ -10,9 +10,9 @@
 
 <br>
 
-Models like Llama, Qwen, and Stable Diffusion are trained on broad, general data — they can do a lot, but they don't know anything specific about your domain. Post-training is how you teach a model your data, your terminology, your task. It's the difference between a model that gives generic answers and one that actually knows your field.
+Foundation models like Llama, Qwen, and Stable Diffusion are powerful but generic. Post-training is how you make them yours — teaching a model your data, your domain, your task.
 
-The problem is that post-training usually means choosing the right hyperparameters, managing GPU clusters, and days of MLOps trial-and-error. Gradients handles all of that. You provide a model and a dataset — Gradients automatically selects the optimal training configuration, hardware, and parameters for your specific problem. You get back the best model your data can produce, without needing to understand how it got there.
+That usually means training scripts, hyperparameter tuning, and GPU infrastructure. Gradients replaces all of it with a single API call. Choose a model and a dataset — Gradients automatically optimizes the training configuration for your problem and delivers a production-ready model.
 
 <br>
 
