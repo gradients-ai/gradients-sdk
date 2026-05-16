@@ -160,7 +160,7 @@ That covers the core workflow — install, train, test. Below is a quick referen
 PENDING → PREPARING_DATA → LOOKING_FOR_NODES → READY → TRAINING → EVALUATING → SUCCESS
 ```
 
-If something goes wrong, the task moves to a failure state instead: `PREP_TASK_FAILURE`, `FAILURE_FINDING_NODES`, or `FAILURE`. Check `task.refresh().status` at any point.
+For details on failure states and error handling, see [Configuration](configuration.md).
 
 <br>
 
