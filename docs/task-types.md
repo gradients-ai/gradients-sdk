@@ -27,7 +27,7 @@ Instruct training teaches a model to follow instructions by showing it examples 
 
 Use Instruct when you have structured data where each row is a task and a desired response. Domain-specific QA, customer support responses, code generation, document summarization — anything where you can express the training data as "given this input, produce this output."
 
-Your dataset needs these columns:
+Dataset fields:
 
 | Field | Required | Description |
 |---|---|---|
@@ -78,7 +78,7 @@ Chat training teaches a model to handle back-and-forth dialogue. Instead of sing
 
 Use Chat when your data is naturally conversational — chatbot logs, support transcripts, tutoring sessions, or any scenario where context builds across multiple messages. The model learns not just how to respond, but how to track context across a conversation.
 
-Your dataset needs a column containing conversation arrays:
+Dataset fields:
 
 | Field | Required | Description |
 |---|---|---|
@@ -135,7 +135,7 @@ DPO (Direct Preference Optimization) trains a model to prefer better responses o
 
 Use DPO when you want to steer a model's behavior — improving tone, reducing harmful outputs, aligning with a house style, or teaching it to prefer concise answers over verbose ones. It's particularly effective when you already have a model that's roughly capable but needs to be refined in how it responds. DPO is the standard approach for alignment and preference tuning.
 
-Your dataset needs these columns:
+Dataset fields:
 
 | Field | Required | Description |
 |---|---|---|
