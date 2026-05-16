@@ -10,6 +10,7 @@
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
   <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Install the SDK</div>
+  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">One package. Everything you need to train and test models.</div>
 </div>
 
 ```bash
@@ -18,9 +19,10 @@ pip install gradientsio
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
   <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Create an account</div>
+  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Sign up, grab an API key, and fund your account — all from the dashboard.</div>
 </div>
 
-Sign up at [gradients.io](https://www.gradients.io/) — one-click account creation. From your dashboard, generate an API key and fund your account with TAO.
+Create your account at [gradients.io](https://www.gradients.io/) — one-click sign-up. From your dashboard, generate an API key and fund your account with TAO.
 
 ```bash
 export GRADIENTS_API_KEY="your-api-key"
@@ -55,7 +57,7 @@ print(quote.total_price)
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
   <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Train a model</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Pick a base model from Hugging Face and a dataset. Gradients handles everything else — data preparation, GPU allocation, training, evaluation, and publishing your fine-tuned model.</div>
+  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Pick a base model from Hugging Face and a dataset. Gradients handles everything else — data preparation, GPU allocation, training, evaluation, and publishing.</div>
 </div>
 
 ```python
@@ -78,6 +80,7 @@ This returns immediately with a task handle. Training runs remotely.
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
   <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Monitor progress</div>
+  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Check status anytime, or block until training completes.</div>
 </div>
 
 Check the status of your training job:
@@ -105,7 +108,7 @@ result = task.wait()
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
   <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Test the result</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Use <code>ModelSampler</code> to compare the base model against your trained model locally. Requires a GPU.</div>
+  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Compare the base model against your trained model on held-out data. Requires a GPU.</div>
 </div>
 
 ```python
@@ -147,6 +150,7 @@ If something goes wrong, the task moves to a failure state instead: `PREP_TASK_F
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
   <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">What to read next</div>
+  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Explore training modes, data formats, and advanced configuration.</div>
 </div>
 
 - **[Task Types](task-types.md)** — Instruct is one of five training modes. Learn when to use Chat, DPO, GRPO, or Image training.
