@@ -34,15 +34,15 @@
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Supervised fine-tuning on instruction/response pairs.</p>
 </div>
 
-### What
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">What</h3>
 
 Instruct training teaches a model to follow instructions by showing it examples of questions and correct answers. This is the most common and straightforward way to fine-tune a model.
 
-### Why
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Why</h3>
 
 Use Instruct when you have structured data where each row is a task and a desired response. Domain-specific QA, customer support responses, code generation, document summarization — anything where you can express the training data as "given this input, produce this output."
 
-### Your data
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Your data</h3>
 
 Your dataset needs these columns:
 
@@ -61,7 +61,7 @@ Example row:
 
 For full dataset preparation details, see [Datasets](datasets.md).
 
-### Example
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Example</h3>
 
 ```python
 from gradientsio import GradientsClient, TaskType
@@ -82,7 +82,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-### Under the hood
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Under the hood</h3>
 
 Instruct training runs supervised fine-tuning (SFT) using LoRA adapters. The model learns to map instructions to outputs by minimizing the difference between its predictions and your training examples. LoRA keeps the process efficient — rather than updating every parameter in the model, it trains a small set of adapter weights that modify the model's behavior. The result is a lightweight adapter that can be loaded on top of the base model for inference.
 
@@ -97,15 +97,15 @@ Instruct training runs supervised fine-tuning (SFT) using LoRA adapters. The mod
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Fine-tune on multi-turn conversations.</p>
 </div>
 
-### What
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">What</h3>
 
 Chat training teaches a model to handle back-and-forth dialogue. Instead of single instruction/response pairs, your data is full conversations with multiple turns between a user and an assistant.
 
-### Why
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Why</h3>
 
 Use Chat when your data is naturally conversational — chatbot logs, support transcripts, tutoring sessions, or any scenario where context builds across multiple messages. The model learns not just how to respond, but how to track context across a conversation.
 
-### Your data
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Your data</h3>
 
 Your dataset needs a column containing conversation arrays:
 
@@ -133,7 +133,7 @@ Example row:
 
 For full dataset preparation details, see [Datasets](datasets.md).
 
-### Example
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Example</h3>
 
 ```python
 task = client.train(
@@ -151,7 +151,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-### Under the hood
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Under the hood</h3>
 
 Chat training is supervised fine-tuning applied to conversation-formatted data. The model is trained using a chat template (like ChatML) that wraps each turn with role markers, so the model learns when it's the assistant's turn to speak and how to condition its response on the full conversation history. Like Instruct, it produces a LoRA adapter.
 
@@ -166,15 +166,15 @@ Chat training is supervised fine-tuning applied to conversation-formatted data. 
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Preference-based training from chosen vs rejected responses.</p>
 </div>
 
-### What
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">What</h3>
 
 DPO (Direct Preference Optimization) trains a model to prefer better responses over worse ones. Instead of showing the model "here's the right answer," you show it two answers to the same prompt and tell it which one is better.
 
-### Why
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Why</h3>
 
 Use DPO when you want to steer a model's behavior — improving tone, reducing harmful outputs, aligning with a house style, or teaching it to prefer concise answers over verbose ones. It's particularly effective when you already have a model that's roughly capable but needs to be refined in how it responds. DPO is the standard approach for alignment and preference tuning.
 
-### Your data
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Your data</h3>
 
 Your dataset needs these columns:
 
@@ -193,7 +193,7 @@ Example row:
 
 For full dataset preparation details, see [Datasets](datasets.md).
 
-### Example
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Example</h3>
 
 ```python
 task = client.train(
@@ -210,7 +210,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-### Under the hood
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Under the hood</h3>
 
 DPO skips the reward model step used in traditional RLHF. Instead, it directly optimizes the model's policy to assign higher probability to chosen responses and lower probability to rejected ones. This requires more GPU memory than Instruct training (roughly 3x) because the algorithm needs to compare the model's current behavior against a reference. The result is a LoRA adapter that shifts the model's preferences without changing its core capabilities.
 
@@ -225,15 +225,15 @@ DPO skips the reward model step used in traditional RLHF. Instead, it directly o
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Reward-driven training using custom scoring functions.</p>
 </div>
 
-### What
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">What</h3>
 
 GRPO (Group Relative Policy Optimization) trains a model using reward functions that score its outputs programmatically. Instead of providing correct answers or preference pairs, you define what "good" looks like as code, and the model learns to maximize that score.
 
-### Why
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Why</h3>
 
 Use GRPO when the quality of an output can be measured automatically — code correctness (does it compile?), format compliance (does it follow a schema?), length constraints, reasoning quality, or any custom criteria. GRPO is especially useful when you can't easily write out ideal answers but you can write a function that scores them.
 
-### Your data
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Your data</h3>
 
 Your dataset needs a prompt column, and you provide reward functions separately:
 
@@ -253,7 +253,7 @@ rewards = [
 
 For full dataset preparation details, see [Datasets](datasets.md).
 
-### Example
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Example</h3>
 
 ```python
 task = client.train(
@@ -271,7 +271,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-### Under the hood
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Under the hood</h3>
 
 GRPO generates multiple completions for each prompt, scores them with your reward functions, and uses the relative scores within each group to update the model. Higher-scoring completions get reinforced, lower-scoring ones get suppressed. It uses roughly 2x the GPU memory of Instruct training because it needs to generate and evaluate multiple completions per step. The result is a LoRA adapter that steers the model toward outputs that score well on your criteria.
 
@@ -286,15 +286,15 @@ GRPO generates multiple completions for each prompt, scores them with your rewar
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">LoRA fine-tuning for image generation models.</p>
 </div>
 
-### What
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">What</h3>
 
 Image training teaches a diffusion model to generate images in a specific style or of a specific subject. You provide a small set of images with captions, and the model learns to reproduce that visual concept.
 
-### Why
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Why</h3>
 
 Use Image training when you want a model that generates images of a particular style (illustration, pixel art, architectural renders), a specific subject (a product, a character, a brand aesthetic), or a visual concept that doesn't exist in the base model's training data. You only need 10–50 images.
 
-### Your data
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Your data</h3>
 
 Image training expects a zip file containing image/caption pairs with matching filenames:
 
@@ -316,7 +316,7 @@ my-dataset.zip
 
 Alternatively, you can pass image/text pairs directly as URLs. See [Datasets](datasets.md) for details.
 
-### Example
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Example</h3>
 
 Using a zip file:
 
@@ -358,7 +358,7 @@ Supported image models:
 | `sdxl` | `stabilityai/stable-diffusion-xl-base-1.0` |
 | `flux` | Flux variants |
 
-### Under the hood
+<h3 style="border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; color: #7c3aed; margin-top: 24px;">Under the hood</h3>
 
 Image training produces a LoRA adapter for the diffusion model. For SDXL, images are trained with 10 repeats for style concepts and 8 for subject concepts, giving the model enough exposure to learn the visual pattern from a small dataset. Flux models use a different training curve with single repeats. The adapter modifies the model's attention layers to associate your captions with the visual features in your images. All image training runs on a single A100 GPU.
 
