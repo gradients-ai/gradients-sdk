@@ -68,17 +68,23 @@ print(quote.total_price)
 
 ```python
 task = client.train(
-    model="Qwen/Qwen2.5-3B",                                      # any Hugging Face model
-    task_type=TaskType.INSTRUCT,                                    # training mode (see Task Types)
-    hours=2,                                                        # how long to train
-    dataset="gradients-io-tournaments/PubMedQA-Normalized-Train",   # any HF dataset or your own
-    field_instruction="instruction",                                # which column is the question
-    field_input="input",                                            # which column is the context
-    field_output="output",                                          # which column is the answer
+    model="Qwen/Qwen2.5-3B",
+    task_type=TaskType.INSTRUCT,
+    hours=2,
+    dataset="gradients-io-tournaments/PubMedQA-Normalized-Train",
+    field_instruction="instruction",
+    field_input="input",
+    field_output="output",
 )
 ```
 
-A quick breakdown: `model` is any Hugging Face model you want to fine-tune. `task_type` sets the training mode — Instruct is for question/answer data, but there are [other modes](task-types.md) for conversations, preference pairs, and images. `hours` is how long to train. The `field_*` parameters tell Gradients which columns in your dataset map to what — here, the dataset has columns called `instruction`, `input`, and `output`. For the full list of parameters, see [Configuration](configuration.md).
+- `model` — any Hugging Face model you want to fine-tune.
+- `task_type` — the training mode. Instruct is for question/answer data, but there are [other modes](task-types.md) for conversations, preference pairs, and images.
+- `hours` — how long to train.
+- `dataset` — a Hugging Face dataset, or your own via S3.
+- `field_*` — tells Gradients which columns in your dataset map to what. Here, the dataset has columns called `instruction`, `input`, and `output`.
+
+For the full list of parameters, see [Configuration](configuration.md).
 
 The call returns immediately with a task handle. Training runs remotely.
 
