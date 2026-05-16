@@ -1,12 +1,12 @@
-<div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 16px; padding: 48px 44px; margin-bottom: 32px;">
-  <div style="display: flex; align-items: center; gap: 28px; font-family: system-ui, -apple-system, sans-serif;">
-    <img src="../examples/logo.png" alt="Gradients" style="height: 88px;">
-    <div>
-      <h1 style="color: #fff; margin: 0; font-size: 2.2em; letter-spacing: -0.01em;">Train with Gradients</h1>
-      <p style="color: #a8b2d1; margin: 10px 0 0 0; font-size: 1.15em; line-height: 1.5;">Post-training, simplified. Fine-tune any model on your data with a single API call.</p>
-    </div>
-  </div>
-</div>
+<table>
+  <tr>
+    <td><img src="../examples/logo.png" alt="Gradients" width="88"></td>
+    <td>
+      <h1>Train with Gradients</h1>
+      <p>Post-training, simplified. Fine-tune any model on your data with a single API call.</p>
+    </td>
+  </tr>
+</table>
 
 Gradients takes a base model and a dataset, and gives you back a fine-tuned model — no infrastructure, no training scripts, no GPU management. Under the hood, your training job runs on a decentralized network of competing trainers. The competition keeps quality high. You don't need to think about any of that to use it.
 

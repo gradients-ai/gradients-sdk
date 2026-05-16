@@ -1,12 +1,12 @@
-<div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 16px; padding: 48px 44px; margin-bottom: 32px;">
-  <div style="display: flex; align-items: center; gap: 28px; font-family: system-ui, -apple-system, sans-serif;">
-    <img src="../examples/logo.png" alt="Gradients" style="height: 88px;">
-    <div>
-      <h1 style="color: #fff; margin: 0; font-size: 2.2em; letter-spacing: -0.01em;">Getting Started</h1>
-      <p style="color: #a8b2d1; margin: 10px 0 0 0; font-size: 1.15em; line-height: 1.5;">From zero to a fine-tuned model. Install the SDK, train on your data, and test the result.</p>
-    </div>
-  </div>
-</div>
+<table>
+  <tr>
+    <td><img src="../examples/logo.png" alt="Gradients" width="88"></td>
+    <td>
+      <h1>Getting Started</h1>
+      <p>From zero to a fine-tuned model. Install the SDK, train on your data, and test the result.</p>
+    </td>
+  </tr>
+</table>
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
   <h2 style="margin: 0; color: #1a1a2e;">Install the SDK</h2>
