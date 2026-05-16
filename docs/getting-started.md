@@ -1,4 +1,4 @@
-<div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 16px; padding: 48px 44px; margin-bottom: 8px;">
+<div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 16px; padding: 48px 44px; margin-bottom: 32px;">
   <div style="display: flex; align-items: center; gap: 28px; font-family: system-ui, -apple-system, sans-serif;">
     <img src="../examples/logo.png" alt="Gradients" style="height: 88px;">
     <div>
@@ -8,18 +8,20 @@
   </div>
 </div>
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Install the SDK</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">One package. Everything you need to train and test models.</div>
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Install the SDK</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">One package. Everything you need to train and test models.</p>
 </div>
 
 ```bash
 pip install gradientsio
 ```
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Create an account</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Sign up, grab an API key, and fund your account — all from the dashboard.</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Create an account</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Sign up, grab an API key, and fund your account — all from the dashboard.</p>
 </div>
 
 Create your account at [gradients.io](https://www.gradients.io/) — one-click sign-up. From your dashboard, generate an API key and fund your account with TAO.
@@ -28,9 +30,11 @@ Create your account at [gradients.io](https://www.gradients.io/) — one-click s
 export GRADIENTS_API_KEY="your-api-key"
 ```
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Pricing</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Pay per hour of training. The rate depends on model size.</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Pricing</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Pay per hour of training. The rate depends on model size.</p>
 </div>
 
 | Model size | Hourly rate |
@@ -55,9 +59,11 @@ quote = client.tasks.check_text_price(
 print(quote.total_price)
 ```
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Train a model</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Pick a base model from Hugging Face and a dataset. Gradients handles everything else — data preparation, GPU allocation, training, evaluation, and publishing.</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Train a model</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Pick a base model from Hugging Face and a dataset. Gradients handles everything else — data preparation, GPU allocation, training, evaluation, and publishing.</p>
 </div>
 
 ```python
@@ -78,9 +84,11 @@ task = client.train(
 
 This returns immediately with a task handle. Training runs remotely.
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Monitor progress</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Check status anytime, or block until training completes.</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Monitor progress</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Check status anytime, or block until training completes.</p>
 </div>
 
 Check the status of your training job:
@@ -106,9 +114,11 @@ task = client.tasks.handle("your-task-id")
 result = task.wait()
 ```
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Test the result</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Compare the base model against your trained model on held-out data. Requires a GPU.</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Test the result</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Compare the base model against your trained model on held-out data. Requires a GPU.</p>
 </div>
 
 ```python
@@ -137,9 +147,11 @@ for sample, base, trained in zip(samples, base_answers, trained_answers):
     print()
 ```
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Task lifecycle</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Every training job moves through these states:</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Task lifecycle</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Every training job moves through these states:</p>
 </div>
 
 ```
@@ -148,9 +160,11 @@ PENDING → PREPARING_DATA → LOOKING_FOR_NODES → READY → TRAINING → EVAL
 
 If something goes wrong, the task moves to a failure state instead: `PREP_TASK_FAILURE`, `FAILURE_FINDING_NODES`, or `FAILURE`. Check `task.refresh().status` at any point.
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">What to read next</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Explore training modes, data formats, and advanced configuration.</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">What to read next</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Explore training modes, data formats, and advanced configuration.</p>
 </div>
 
 - **[Task Types](task-types.md)** — Instruct is one of five training modes. Learn when to use Chat, DPO, GRPO, or Image training.

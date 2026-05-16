@@ -1,4 +1,4 @@
-<div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 16px; padding: 48px 44px; margin-bottom: 8px;">
+<div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 16px; padding: 48px 44px; margin-bottom: 32px;">
   <div style="display: flex; align-items: center; gap: 28px; font-family: system-ui, -apple-system, sans-serif;">
     <img src="../examples/logo.png" alt="Gradients" style="height: 88px;">
     <div>
@@ -10,18 +10,22 @@
 
 Gradients takes a base model and a dataset, and gives you back a fine-tuned model — no infrastructure, no training scripts, no GPU management. Under the hood, your training job runs on a decentralized network of competing trainers. The competition keeps quality high. You don't need to think about any of that to use it.
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Start here</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">New to Gradients? The getting-started guide takes you from install to a trained model in minutes.</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Start here</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">New to Gradients? The getting-started guide takes you from install to a trained model in minutes.</p>
 </div>
 
 | | |
 |---|---|
 | **[Getting Started](getting-started.md)** | Install the SDK, create an account, and train your first model. |
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Guides</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Go deeper on training modes, data preparation, and configuration.</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Guides</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Go deeper on training modes, data preparation, and configuration.</p>
 </div>
 
 | | |
@@ -32,9 +36,11 @@ Gradients takes a base model and a dataset, and gives you back a fine-tuned mode
 | **[Scheduler](scheduler.md)** | Multi-iteration training across multiple datasets. |
 | **[Inference](inference.md)** | Test your fine-tuned model locally with ModelSampler. |
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 36px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <div style="font-weight: 700; font-size: 1.2em; color: #1a1a2e;">Reference</div>
-  <div style="color: #6b7280; font-size: 0.95em; margin-top: 6px; line-height: 1.5;">Full API surface and platform internals.</div>
+<br>
+
+<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #1a1a2e;">Reference</h2>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Full API surface and platform internals.</p>
 </div>
 
 | | |
