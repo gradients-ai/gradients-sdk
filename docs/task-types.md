@@ -44,6 +44,8 @@ Example row:
 
 For full dataset preparation details, see [Datasets](datasets.md).
 
+With your data ready, training is a single call:
+
 ```python
 from gradientsio import GradientsClient, TaskType
 
@@ -63,7 +65,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-Instruct training runs supervised fine-tuning (SFT) using LoRA adapters. The model learns to map instructions to outputs by minimizing the difference between its predictions and your training examples. LoRA keeps the process efficient — rather than updating every parameter in the model, it trains a small set of adapter weights that modify the model's behavior. The result is a lightweight adapter that can be loaded on top of the base model for inference.
+What happens behind the scenes: Instruct training runs supervised fine-tuning (SFT) using LoRA adapters. The model learns to map instructions to outputs by minimizing the difference between its predictions and your training examples. LoRA keeps the process efficient — rather than updating every parameter in the model, it trains a small set of adapter weights that modify the model's behavior. The result is a lightweight adapter that can be loaded on top of the base model for inference.
 
 <br>
 
@@ -104,6 +106,8 @@ Example row:
 
 For full dataset preparation details, see [Datasets](datasets.md).
 
+With your conversations formatted, training looks like this:
+
 ```python
 task = client.train(
     model="Qwen/Qwen2.5-7B-Instruct",
@@ -120,7 +124,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-Chat training is supervised fine-tuning applied to conversation-formatted data. The model is trained using a chat template (like ChatML) that wraps each turn with role markers, so the model learns when it's the assistant's turn to speak and how to condition its response on the full conversation history. Like Instruct, it produces a LoRA adapter.
+What happens behind the scenes: Chat training is supervised fine-tuning applied to conversation-formatted data. The model is trained using a chat template (like ChatML) that wraps each turn with role markers, so the model learns when it's the assistant's turn to speak and how to condition its response on the full conversation history. Like Instruct, it produces a LoRA adapter.
 
 <br>
 
@@ -152,6 +156,8 @@ Example row:
 
 For full dataset preparation details, see [Datasets](datasets.md).
 
+With your preference pairs ready, training is one call:
+
 ```python
 task = client.train(
     model="Qwen/Qwen2.5-7B-Instruct",
@@ -167,7 +173,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-DPO skips the reward model step used in traditional RLHF. Instead, it directly optimizes the model's policy to assign higher probability to chosen responses and lower probability to rejected ones. This requires more GPU memory than Instruct training (roughly 3x) because the algorithm needs to compare the model's current behavior against a reference. The result is a LoRA adapter that shifts the model's preferences without changing its core capabilities.
+What happens behind the scenes: DPO skips the reward model step used in traditional RLHF. Instead, it directly optimizes the model's policy to assign higher probability to chosen responses and lower probability to rejected ones. This requires more GPU memory than Instruct training (roughly 3x) because the algorithm needs to compare the model's current behavior against a reference. The result is a LoRA adapter that shifts the model's preferences without changing its core capabilities.
 
 > [!IMPORTANT]
 > DPO uses approximately 3x the GPU memory of Instruct training. This is reflected in pricing for larger models.
@@ -203,6 +209,8 @@ rewards = [
 
 For full dataset preparation details, see [Datasets](datasets.md).
 
+With your prompts and reward functions defined, training looks like this:
+
 ```python
 task = client.train(
     model="Qwen/Qwen2.5-7B-Instruct",
@@ -219,7 +227,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-GRPO generates multiple completions for each prompt, scores them with your reward functions, and uses the relative scores within each group to update the model. Higher-scoring completions get reinforced, lower-scoring ones get suppressed. It uses roughly 2x the GPU memory of Instruct training because it needs to generate and evaluate multiple completions per step. The result is a LoRA adapter that steers the model toward outputs that score well on your criteria.
+What happens behind the scenes: GRPO generates multiple completions for each prompt, scores them with your reward functions, and uses the relative scores within each group to update the model. Higher-scoring completions get reinforced, lower-scoring ones get suppressed. It uses roughly 2x the GPU memory of Instruct training because it needs to generate and evaluate multiple completions per step. The result is a LoRA adapter that steers the model toward outputs that score well on your criteria.
 
 <br>
 
@@ -254,7 +262,7 @@ my-dataset.zip
 
 Alternatively, you can pass image/text pairs directly as URLs. See [Datasets](datasets.md) for details.
 
-Using a zip file:
+Training with a zip file:
 
 ```python
 task = client.tasks.create_image_zip(
@@ -268,7 +276,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-Using individual image/text pair URLs:
+Or using individual image/text pair URLs:
 
 ```python
 from gradientsio import ImageTextPair
@@ -290,7 +298,7 @@ print(result.trained_model_repository)
 > [!TIP]
 > Supported image models: `sdxl` (Stable Diffusion XL) and `flux` (Flux variants).
 
-Image training produces a LoRA adapter for the diffusion model. For SDXL, images are trained with 10 repeats for style concepts and 8 for subject concepts, giving the model enough exposure to learn the visual pattern from a small dataset. Flux models use a different training curve with single repeats. The adapter modifies the model's attention layers to associate your captions with the visual features in your images. All image training runs on a single A100 GPU.
+What happens behind the scenes: Image training produces a LoRA adapter for the diffusion model. For SDXL, images are trained with 10 repeats for style concepts and 8 for subject concepts, giving the model enough exposure to learn the visual pattern from a small dataset. Flux models use a different training curve with single repeats. The adapter modifies the model's attention layers to associate your captions with the visual features in your images. All image training runs on a single A100 GPU.
 
 <br>
 
