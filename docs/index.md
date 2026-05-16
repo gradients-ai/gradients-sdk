@@ -17,9 +17,12 @@ Gradients takes a base model and a dataset, and gives you back a fine-tuned mode
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">New to Gradients? The getting-started guide takes you from install to a trained model in minutes.</p>
 </div>
 
-| | |
-|---|---|
-| **[Getting Started](getting-started.md)** | Install the SDK, create an account, and train your first model. |
+<table>
+  <tr>
+    <td><strong><a href="getting-started.md">Getting Started</a></strong></td>
+    <td>Install the SDK, create an account, and train your first model.</td>
+  </tr>
+</table>
 
 <br>
 
@@ -28,13 +31,28 @@ Gradients takes a base model and a dataset, and gives you back a fine-tuned mode
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Go deeper on training modes, data preparation, and configuration.</p>
 </div>
 
-| | |
-|---|---|
-| **[Task Types](task-types.md)** | Instruct, Chat, DPO, GRPO, and Image training — when to use each and how. |
-| **[Datasets](datasets.md)** | How to prepare and format your data for each task type. |
-| **[Configuration](configuration.md)** | Every parameter explained — hours, backends, pricing, polling, errors. |
-| **[Scheduler](scheduler.md)** | Multi-iteration training across multiple datasets. |
-| **[Inference](inference.md)** | Test your fine-tuned model locally with ModelSampler. |
+<table>
+  <tr>
+    <td><strong><a href="task-types.md">Task Types</a></strong></td>
+    <td>Instruct, Chat, DPO, GRPO, and Image training — when to use each and how.</td>
+  </tr>
+  <tr>
+    <td><strong><a href="datasets.md">Datasets</a></strong></td>
+    <td>How to prepare and format your data for each task type.</td>
+  </tr>
+  <tr>
+    <td><strong><a href="configuration.md">Configuration</a></strong></td>
+    <td>Every parameter explained — hours, backends, pricing, polling, errors.</td>
+  </tr>
+  <tr>
+    <td><strong><a href="scheduler.md">Scheduler</a></strong></td>
+    <td>Multi-iteration training across multiple datasets.</td>
+  </tr>
+  <tr>
+    <td><strong><a href="inference.md">Inference</a></strong></td>
+    <td>Test your fine-tuned model locally with ModelSampler.</td>
+  </tr>
+</table>
 
 <br>
 
@@ -43,7 +61,13 @@ Gradients takes a base model and a dataset, and gives you back a fine-tuned mode
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Full API surface and platform internals.</p>
 </div>
 
-| | |
-|---|---|
-| **[API Reference](api-reference.md)** | Complete class, method, and type reference. |
-| **[Architecture](architecture.md)** | How the platform works — tournaments, validators, miners, LoRA. |
+<table>
+  <tr>
+    <td><strong><a href="api-reference.md">API Reference</a></strong></td>
+    <td>Complete class, method, and type reference.</td>
+  </tr>
+  <tr>
+    <td><strong><a href="architecture.md">Architecture</a></strong></td>
+    <td>How the platform works — tournaments, validators, miners, LoRA.</td>
+  </tr>
+</table>
