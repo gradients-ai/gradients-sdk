@@ -59,8 +59,6 @@ quote = client.tasks.check_text_price(
 print(quote.total_price)
 ```
 
-Now you have an account, you know what it costs — time to train something.
-
 <br>
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
@@ -82,7 +80,7 @@ task = client.train(
 
 A quick breakdown: `model` is any Hugging Face model you want to fine-tune. `task_type` sets the training mode — Instruct is for question/answer data, but there are [other modes](task-types.md) for conversations, preference pairs, and images. `hours` is how long to train. The `field_*` parameters tell Gradients which columns in your dataset map to what — here, the dataset has columns called `instruction`, `input`, and `output`. For the full list of parameters, see [Configuration](configuration.md).
 
-That's it. The call returns immediately with a task handle — training runs remotely. So how do you know when it's done?
+The call returns immediately with a task handle. Training runs remotely.
 
 <br>
 
@@ -107,14 +105,12 @@ print(result.trained_model_repository)
 
 The `trained_model_repository` is a Hugging Face repo containing your fine-tuned model. Training typically takes 1–3 hours depending on the model size and `hours` parameter.
 
-If you close your session and come back later, reconnect to an existing task by ID — you won't lose your job:
+If you close your session and come back later, reconnect to an existing task by ID:
 
 ```python
 task = client.tasks.handle("your-task-id")
 result = task.wait()
 ```
-
-Once training finishes, the interesting question is: did it actually learn anything?
 
 <br>
 
@@ -148,8 +144,6 @@ for sample, base, trained in zip(samples, base_answers, trained_answers):
     print(f"Trained:  {trained[:100]}...")
     print()
 ```
-
-That covers the core workflow — install, train, test. Below is a quick reference for what happens under the hood.
 
 <br>
 
