@@ -29,9 +29,9 @@
 
 <br>
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;" id="instruct">Instruct</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Supervised fine-tuning on instruction/response pairs.</p>
+<div style="background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 12px; padding: 20px 24px; margin: 16px 0 14px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #fff;" id="instruct">Instruct</h2>
+  <p style="color: #a8b2d1; margin: 6px 0 0 0; line-height: 1.5;">Supervised fine-tuning on instruction/response pairs.</p>
 </div>
 
 <div style="border-left: 3px solid #e2e8f0; padding: 8px 16px; margin-top: 24px;">
@@ -102,9 +102,9 @@ Instruct training runs supervised fine-tuning (SFT) using LoRA adapters. The mod
 
 <br>
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;" id="chat">Chat</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Fine-tune on multi-turn conversations.</p>
+<div style="background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 12px; padding: 20px 24px; margin: 16px 0 14px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #fff;" id="chat">Chat</h2>
+  <p style="color: #a8b2d1; margin: 6px 0 0 0; line-height: 1.5;">Fine-tune on multi-turn conversations.</p>
 </div>
 
 <div style="border-left: 3px solid #e2e8f0; padding: 8px 16px; margin-top: 24px;">
@@ -181,9 +181,9 @@ Chat training is supervised fine-tuning applied to conversation-formatted data. 
 
 <br>
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;" id="dpo">DPO</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Preference-based training from chosen vs rejected responses.</p>
+<div style="background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 12px; padding: 20px 24px; margin: 16px 0 14px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #fff;" id="dpo">DPO</h2>
+  <p style="color: #a8b2d1; margin: 6px 0 0 0; line-height: 1.5;">Preference-based training from chosen vs rejected responses.</p>
 </div>
 
 <div style="border-left: 3px solid #e2e8f0; padding: 8px 16px; margin-top: 24px;">
@@ -250,9 +250,9 @@ DPO skips the reward model step used in traditional RLHF. Instead, it directly o
 
 <br>
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;" id="grpo">GRPO</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Reward-driven training using custom scoring functions.</p>
+<div style="background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 12px; padding: 20px 24px; margin: 16px 0 14px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #fff;" id="grpo">GRPO</h2>
+  <p style="color: #a8b2d1; margin: 6px 0 0 0; line-height: 1.5;">Reward-driven training using custom scoring functions.</p>
 </div>
 
 <div style="border-left: 3px solid #e2e8f0; padding: 8px 16px; margin-top: 24px;">
@@ -321,9 +321,9 @@ GRPO generates multiple completions for each prompt, scores them with your rewar
 
 <br>
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;" id="image">Image</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">LoRA fine-tuning for image generation models.</p>
+<div style="background: linear-gradient(135deg, #1a1a2e, #0f3460); border-radius: 12px; padding: 20px 24px; margin: 16px 0 14px 0; font-family: system-ui, -apple-system, sans-serif;">
+  <h2 style="margin: 0; color: #fff;" id="image">Image</h2>
+  <p style="color: #a8b2d1; margin: 6px 0 0 0; line-height: 1.5;">LoRA fine-tuning for image generation models.</p>
 </div>
 
 <div style="border-left: 3px solid #e2e8f0; padding: 8px 16px; margin-top: 24px;">
