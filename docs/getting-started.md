@@ -70,15 +70,17 @@ Now you have an account, you know what it costs — time to train something.
 
 ```python
 task = client.train(
-    model="Qwen/Qwen2.5-3B",
-    task_type=TaskType.INSTRUCT,
-    hours=2,
-    dataset="gradients-io-tournaments/PubMedQA-Normalized-Train",
-    field_instruction="instruction",
-    field_input="input",
-    field_output="output",
+    model="Qwen/Qwen2.5-3B",                                      # any Hugging Face model
+    task_type=TaskType.INSTRUCT,                                    # training mode (see Task Types)
+    hours=2,                                                        # how long to train
+    dataset="gradients-io-tournaments/PubMedQA-Normalized-Train",   # any HF dataset or your own
+    field_instruction="instruction",                                # which column is the question
+    field_input="input",                                            # which column is the context
+    field_output="output",                                          # which column is the answer
 )
 ```
+
+A quick breakdown: `model` is any Hugging Face model you want to fine-tune. `task_type` sets the training mode — Instruct is for question/answer data, but there are [other modes](task-types.md) for conversations, preference pairs, and images. `hours` is how long to train. The `field_*` parameters tell Gradients which columns in your dataset map to what — here, the dataset has columns called `instruction`, `input`, and `output`. For the full list of parameters, see [Configuration](configuration.md).
 
 That's it. The call returns immediately with a task handle — training runs remotely. So how do you know when it's done?
 
