@@ -30,6 +30,12 @@ Create your account at [gradients.io](https://www.gradients.io/) — one-click s
 export GRADIENTS_API_KEY="your-api-key"
 ```
 
+```python
+from gradientsio import GradientsClient, TaskType
+
+client = GradientsClient()
+```
+
 <br>
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
@@ -37,27 +43,23 @@ export GRADIENTS_API_KEY="your-api-key"
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Pay per hour of training. The rate depends on model size.</p>
 </div>
 
-| Model size | Hourly rate |
-|---|---|
-| Up to 1B parameters | $10 / hr |
-| Up to 7B parameters | $15 / hr |
-| Up to 40B parameters | $25 / hr |
-| 40B+ parameters | $50 / hr |
-| Image models | $5 / hr |
+| Model size | Hourly rate | | |
+|---|---|---|---|
+| Up to 1B parameters | $10 / hr | 40B+ parameters | $50 / hr |
+| Up to 7B parameters | $15 / hr | Image models | $5 / hr |
+| Up to 40B parameters | $25 / hr | | |
 
-No hidden fees. You can check the exact cost of a job before you run it:
+If in doubt, you can check the exact cost of a job before you run it:
 
 ```python
-from gradientsio import GradientsClient
-
-client = GradientsClient()
-
 quote = client.tasks.check_text_price(
     model_repo="Qwen/Qwen2.5-3B",
     hours_to_complete=2,
 )
 print(quote.total_price)
 ```
+
+Now you have an account, you know what it costs — time to train something.
 
 <br>
 
@@ -67,10 +69,6 @@ print(quote.total_price)
 </div>
 
 ```python
-from gradientsio import GradientsClient, TaskType
-
-client = GradientsClient()
-
 task = client.train(
     model="Qwen/Qwen2.5-3B",
     task_type=TaskType.INSTRUCT,
@@ -82,16 +80,16 @@ task = client.train(
 )
 ```
 
-This returns immediately with a task handle. Training runs remotely.
+That's it. The call returns immediately with a task handle — training runs remotely. So how do you know when it's done?
 
 <br>
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
   <h2 style="margin: 0; color: #1a1a2e;">Monitor progress</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Check status anytime, or block until training completes.</p>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Check in on your job, or just wait for it to finish.</p>
 </div>
 
-Check the status of your training job:
+Check the status anytime:
 
 ```python
 details = task.refresh()
@@ -107,12 +105,14 @@ print(result.trained_model_repository)
 
 The `trained_model_repository` is a Hugging Face repo containing your fine-tuned model. Training typically takes 1–3 hours depending on the model size and `hours` parameter.
 
-If you close your session and come back later, reconnect to an existing task by ID:
+If you close your session and come back later, reconnect to an existing task by ID — you won't lose your job:
 
 ```python
 task = client.tasks.handle("your-task-id")
 result = task.wait()
 ```
+
+Once training finishes, the interesting question is: did it actually learn anything?
 
 <br>
 
@@ -146,6 +146,8 @@ for sample, base, trained in zip(samples, base_answers, trained_answers):
     print(f"Trained:  {trained[:100]}...")
     print()
 ```
+
+That covers the core workflow — install, train, test. Below is a quick reference for what happens under the hood.
 
 <br>
 
