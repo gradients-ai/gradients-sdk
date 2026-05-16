@@ -1,12 +1,4 @@
-<table>
-  <tr>
-    <td><img src="../examples/logo.png" alt="Gradients" width="88"></td>
-    <td>
-      <h1>Train with Gradients</h1>
-      <p>Post-training, simplified. Fine-tune any model on your data with a single API call.</p>
-    </td>
-  </tr>
-</table>
+<img src="assets/banner-main.svg" width="800" alt="Train with Gradients">
 
 <br>
 
@@ -16,10 +8,7 @@ That usually means training scripts, hyperparameter tuning, and GPU infrastructu
 
 <br>
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;">Start here</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">New to Gradients? The getting-started guide takes you from install to a trained model in minutes.</p>
-</div>
+<img src="assets/section-start-here.svg" width="800" alt="Start here">
 
 <table>
   <tr>
@@ -30,10 +19,7 @@ That usually means training scripts, hyperparameter tuning, and GPU infrastructu
 
 <br>
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;">Guides</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Go deeper on training modes, data preparation, and configuration.</p>
-</div>
+<img src="assets/section-guides.svg" width="800" alt="Guides">
 
 <table>
   <tr>
@@ -60,10 +46,7 @@ That usually means training scripts, hyperparameter tuning, and GPU infrastructu
 
 <br>
 
-<div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;">Reference</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Full API surface and platform internals.</p>
-</div>
+<img src="assets/section-reference.svg" width="800" alt="Reference">
 
 <table>
   <tr>
