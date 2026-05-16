@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="32">
-  <rect width="3" height="32" fill="#e2e8f0"/>
-  <text x="16" y="22" fill="#7c3aed" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700">Why</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="28">
+  <rect x="0" y="2" width="3" height="24" rx="2" fill="#7c3aed"/>
+  <text x="14" y="20" fill="#7c3aed" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="600">Why</text>
 </svg>
