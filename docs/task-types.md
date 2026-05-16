@@ -17,11 +17,11 @@
 
 | I have... | Use | Task type |
 |---|---|---|
-| Question/answer pairs, or instruction/response data | **Instruct** | `TaskType.INSTRUCT` |
-| Multi-turn conversations | **Chat** | `TaskType.CHAT` |
-| Pairs of good and bad responses to the same prompt | **DPO** | `TaskType.DPO` |
-| Prompts and a way to score outputs programmatically | **GRPO** | `TaskType.GRPO` |
-| 10–50 images with captions | **Image** | `TaskType.IMAGE` |
+| Question/answer pairs, or instruction/response data | **[Instruct](#instruct)** | `TaskType.INSTRUCT` |
+| Multi-turn conversations | **[Chat](#chat)** | `TaskType.CHAT` |
+| Pairs of good and bad responses to the same prompt | **[DPO](#dpo)** | `TaskType.DPO` |
+| Prompts and a way to score outputs programmatically | **[GRPO](#grpo)** | `TaskType.GRPO` |
+| 10–50 images with captions | **[Image](#image)** | `TaskType.IMAGE` |
 
 <br>
 
@@ -30,7 +30,7 @@
 <br>
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;">Instruct</h2>
+  <h2 style="margin: 0; color: #1a1a2e;" id="instruct">Instruct</h2>
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Supervised fine-tuning on instruction/response pairs.</p>
 </div>
 
@@ -93,7 +93,7 @@ Instruct training runs supervised fine-tuning (SFT) using LoRA adapters. The mod
 <br>
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;">Chat</h2>
+  <h2 style="margin: 0; color: #1a1a2e;" id="chat">Chat</h2>
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Fine-tune on multi-turn conversations.</p>
 </div>
 
@@ -162,7 +162,7 @@ Chat training is supervised fine-tuning applied to conversation-formatted data. 
 <br>
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;">DPO</h2>
+  <h2 style="margin: 0; color: #1a1a2e;" id="dpo">DPO</h2>
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Preference-based training from chosen vs rejected responses.</p>
 </div>
 
@@ -221,7 +221,7 @@ DPO skips the reward model step used in traditional RLHF. Instead, it directly o
 <br>
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;">GRPO</h2>
+  <h2 style="margin: 0; color: #1a1a2e;" id="grpo">GRPO</h2>
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Reward-driven training using custom scoring functions.</p>
 </div>
 
@@ -282,7 +282,7 @@ GRPO generates multiple completions for each prompt, scores them with your rewar
 <br>
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
-  <h2 style="margin: 0; color: #1a1a2e;">Image</h2>
+  <h2 style="margin: 0; color: #1a1a2e;" id="image">Image</h2>
   <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">LoRA fine-tuning for image generation models.</p>
 </div>
 
