@@ -10,6 +10,8 @@ That usually means training scripts, hyperparameter tuning, and GPU infrastructu
 
 <img src="assets/section-start-here.svg" width="800" alt="Start here">
 
+The getting-started guide takes you from install to a trained model in minutes.
+
 <table>
   <tr>
     <td><strong><a href="getting-started.md">Getting Started</a></strong></td>
@@ -20,6 +22,8 @@ That usually means training scripts, hyperparameter tuning, and GPU infrastructu
 <br>
 
 <img src="assets/section-guides.svg" width="800" alt="Guides">
+
+Go deeper on training modes, data preparation, and configuration.
 
 <table>
   <tr>
@@ -47,6 +51,8 @@ That usually means training scripts, hyperparameter tuning, and GPU infrastructu
 <br>
 
 <img src="assets/section-reference.svg" width="800" alt="Reference">
+
+Full API surface and platform internals.
 
 <table>
   <tr>

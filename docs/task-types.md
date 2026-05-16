@@ -4,6 +4,8 @@
 
 <img src="assets/section-which-type.svg" width="800" alt="Which type do I use?">
 
+Match your data to a training mode.
+
 | I have... | Use | Task type |
 |---|---|---|
 | Question/answer pairs, or instruction/response data | **[Instruct](#instruct)** | `TaskType.INSTRUCT` |
@@ -18,6 +20,8 @@
 
 <a id="instruct"></a>
 <img src="assets/task-instruct.svg" width="800" alt="Instruct">
+
+Supervised fine-tuning on instruction/response pairs.
 
 <img src="assets/sub-what.svg" width="800" alt="What">
 
@@ -77,6 +81,8 @@ Instruct training runs supervised fine-tuning (SFT) using LoRA adapters. The mod
 
 <a id="chat"></a>
 <img src="assets/task-chat.svg" width="800" alt="Chat">
+
+Fine-tune on multi-turn conversations.
 
 <img src="assets/sub-what.svg" width="800" alt="What">
 
@@ -143,6 +149,8 @@ Chat training is supervised fine-tuning applied to conversation-formatted data. 
 <a id="dpo"></a>
 <img src="assets/task-dpo.svg" width="800" alt="DPO">
 
+Preference-based training from chosen vs rejected responses.
+
 <img src="assets/sub-what.svg" width="800" alt="What">
 
 DPO (Direct Preference Optimization) trains a model to prefer better responses over worse ones. Instead of showing the model "here's the right answer," you show it two answers to the same prompt and tell it which one is better.
@@ -201,6 +209,8 @@ DPO skips the reward model step used in traditional RLHF. Instead, it directly o
 <a id="grpo"></a>
 <img src="assets/task-grpo.svg" width="800" alt="GRPO">
 
+Reward-driven training using custom scoring functions.
+
 <img src="assets/sub-what.svg" width="800" alt="What">
 
 GRPO (Group Relative Policy Optimization) trains a model using reward functions that score its outputs programmatically. Instead of providing correct answers or preference pairs, you define what "good" looks like as code, and the model learns to maximize that score.
@@ -257,6 +267,8 @@ GRPO generates multiple completions for each prompt, scores them with your rewar
 
 <a id="image"></a>
 <img src="assets/task-image.svg" width="800" alt="Image">
+
+LoRA fine-tuning for image generation models.
 
 <img src="assets/sub-what.svg" width="800" alt="What">
 

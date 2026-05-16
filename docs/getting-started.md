@@ -4,6 +4,8 @@
 
 <img src="assets/section-install-the-sdk.svg" width="800" alt="Install the SDK">
 
+One package. Everything you need to train and test models.
+
 ```bash
 pip install gradientsio
 ```
@@ -11,6 +13,8 @@ pip install gradientsio
 <br>
 
 <img src="assets/section-create-an-account.svg" width="800" alt="Create an account">
+
+Sign up, grab an API key, and fund your account — all from the dashboard.
 
 Create your account at [gradients.io](https://www.gradients.io/) — one-click sign-up. From your dashboard, generate an API key and fund your account with TAO.
 
@@ -27,6 +31,8 @@ client = GradientsClient()
 <br>
 
 <img src="assets/section-pricing.svg" width="800" alt="Pricing">
+
+Pay per hour of training. The rate depends on model size.
 
 | Model size | Hourly rate | | |
 |---|---|---|---|
@@ -47,6 +53,8 @@ print(quote.total_price)
 <br>
 
 <img src="assets/section-train-a-model.svg" width="800" alt="Train a model">
+
+Pick a base model from Hugging Face and a dataset. Gradients handles everything else — data preparation, GPU allocation, training, evaluation, and publishing.
 
 ```python
 task = client.train(
@@ -74,7 +82,7 @@ The call returns immediately with a task handle. Training runs remotely.
 
 <img src="assets/section-monitor-progress.svg" width="800" alt="Monitor progress">
 
-Check the status anytime:
+Check in on your job, or just wait for it to finish.
 
 ```python
 details = task.refresh()
@@ -100,6 +108,8 @@ result = task.wait()
 <br>
 
 <img src="assets/section-test-the-result.svg" width="800" alt="Test the result">
+
+Compare the base model against your trained model on held-out data.
 
 > [!NOTE]
 > Local inference with `ModelSampler` requires a GPU.
@@ -133,6 +143,8 @@ for sample, base, trained in zip(samples, base_answers, trained_answers):
 <br>
 
 <img src="assets/section-task-lifecycle.svg" width="800" alt="Task lifecycle">
+
+Every training job moves through these states:
 
 ```
 PENDING → PREPARING_DATA → LOOKING_FOR_NODES → READY → TRAINING → EVALUATING → SUCCESS
