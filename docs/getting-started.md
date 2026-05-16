@@ -166,9 +166,9 @@ For details on failure states and error handling, see [Configuration](configurat
 
 <div style="border-left: 4px solid #7c3aed; padding: 20px 24px; margin: 16px 0 14px 0; background: linear-gradient(90deg, #f5f3ff 0%, #ffffff 100%); border-radius: 0 12px 12px 0; font-family: system-ui, -apple-system, sans-serif;">
   <h2 style="margin: 0; color: #1a1a2e;">What to read next</h2>
-  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">Explore training modes, data formats, and advanced configuration.</p>
+  <p style="color: #6b7280; margin: 6px 0 0 0; line-height: 1.5;">You've trained an Instruct model — but that's just one way to use Gradients.</p>
 </div>
 
-- **[Task Types](task-types.md)** — Instruct is one of five training modes. Learn when to use Chat, DPO, GRPO, or Image training.
-- **[Datasets](datasets.md)** — How to prepare your own data, supported formats, and field mappings.
-- **[Configuration](configuration.md)** — All the parameters you can control and what they do.
+- **[Task Types](task-types.md)** — Instruct is one of five training modes. If you have conversations, use Chat. If you have preference pairs, use DPO. If you want reward-driven training, use GRPO. If you're working with images, there's a mode for that too.
+- **[Datasets](datasets.md)** — The PubMedQA example used a Hugging Face dataset, but you can bring your own data in JSON, CSV, or via S3. This guide covers how to prepare it.
+- **[Configuration](configuration.md)** — Everything you can control: hours, backends, pricing, polling, error handling, and what each parameter actually does.

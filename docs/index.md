@@ -8,7 +8,9 @@
   </tr>
 </table>
 
-Gradients takes a base model and a dataset, and gives you back a fine-tuned model — no infrastructure, no training scripts, no GPU management. Under the hood, your training job runs on a decentralized network of competing trainers. The competition keeps quality high. You don't need to think about any of that to use it.
+Foundation models are general-purpose — they know a little about everything but nothing deep about your domain. Post-training is how you close that gap: you take a base model and teach it your data, your terminology, your task. The problem is that post-training usually means training scripts, GPU clusters, and days of MLOps.
+
+Gradients lets you skip all of that. Give it a base model and a dataset, and it gives you back a fine-tuned model. Under the hood, your job runs on a decentralized network of competing trainers — the competition keeps quality high. You don't need to think about any of that to use it.
 
 <br>
 
