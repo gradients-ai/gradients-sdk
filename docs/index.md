@@ -36,7 +36,7 @@ Go deeper on training modes, data preparation, and configuration.
   </tr>
   <tr>
     <td><strong><a href="configuration.md">Configuration</a></strong></td>
-    <td>Every parameter explained — hours, backends, pricing, polling, errors.</td>
+    <td>Every parameter explained — hours, polling, errors, environment variables.</td>
   </tr>
   <tr>
     <td><strong><a href="scheduler.md">Scheduler</a></strong></td>
@@ -45,6 +45,10 @@ Go deeper on training modes, data preparation, and configuration.
   <tr>
     <td><strong><a href="inference.md">Inference</a></strong></td>
     <td>Test your fine-tuned model locally with ModelSampler.</td>
+  </tr>
+  <tr>
+    <td><strong><a href="account.md">Account</a></strong></td>
+    <td>Billing, balance, pricing, and funding your account.</td>
   </tr>
 </table>
 

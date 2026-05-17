@@ -17,7 +17,6 @@ The `client.train()` method accepts these core parameters across all task types:
 | `hours` | `float` | Training duration. Fractional hours are valid (e.g. `0.5`) |
 | `dataset` | `str`, `Datasets`, or `dict` | Dataset source — HF repo name, `Datasets.S3(...)`, or raw dict |
 | `result_model_name` | `str` (optional) | Custom name for the output model on Hugging Face |
-| `backend` | `str` (optional) | Compute backend — see [Backends](#backends) below |
 | `yarn_factor` | `int` (optional) | Context length extension. Powers of 2: 2, 4, 8, 16, 32 |
 
 Task-type-specific parameters are covered in [Task Types](task-types.md) and [Datasets](datasets.md).
@@ -38,41 +37,6 @@ These are starting points. Gradients optimizes the training configuration automa
 **`yarn_factor`**
 
 Extends the model's context length beyond its default. Useful when your training examples are longer than the base model's context window. A `yarn_factor` of 4 on a model with 4K context gives you 16K effective context. Only use this if your data actually needs the extra length — it increases memory usage.
-
-<br>
-
----
-
-<a id="backends"></a>
-<img src="assets/section-backends.svg" width="800" alt="Backends">
-
-Gradients runs training on GPU clusters. You can choose which backend to use:
-
-| Backend | Value | Description |
-|---|---|---|
-| RunPod | `"runpod"` | Default. General-purpose GPU cloud |
-| Oblivus | `"oblivus"` | Alternative provider |
-
-```python
-task = client.train(
-    ...
-    backend="oblivus",
-)
-```
-
-If you don't specify a backend, RunPod is used. Both backends produce identical results — the difference is availability and scheduling.
-
-GPU allocation is automatic based on model size:
-
-| Model size | GPUs |
-|---|---|
-| ≤ 4B parameters | 1x H100 |
-| 4–12B | 2x H100 |
-| 12–40B | 4x H100 |
-| 40B+ | 8x H100 |
-| Image (all sizes) | 1x A100 |
-
-DPO tasks use ~3x the memory of Instruct, and GRPO uses ~2x. The GPU allocation accounts for this automatically.
 
 <br>
 
@@ -246,47 +210,6 @@ For local inference with `ModelSampler`, you may also need:
 |---|---|
 | `HF_TOKEN` | Hugging Face token for accessing gated models |
 | `HUGGING_FACE_HUB_TOKEN` | Alternative HF token variable (either works) |
-
-<br>
-
----
-
-<img src="assets/section-account.svg" width="800" alt="Account and billing">
-
-Check your balance and get your deposit address programmatically. These require `GRADIENTS_SESSION_TOKEN`:
-
-```python
-# check balance
-account = client.account.get_info()
-print(account)
-
-# get TAO deposit address
-deposit = client.account.get_public_key()
-print(deposit["public_key"])
-```
-
-Check pricing before creating a task:
-
-```python
-# text models
-quote = client.tasks.check_text_price(
-    model_repo="Qwen/Qwen2.5-7B-Instruct",
-    hours_to_complete=2,
-)
-print(quote.total_price)
-
-# image models
-quote = client.tasks.check_image_price(
-    model_repo="stabilityai/stable-diffusion-xl-base-1.0",
-    hours_to_complete=1,
-)
-print(quote.total_price)
-
-# full price table
-prices = client.tasks.prices()
-```
-
-For current pricing tiers, see [Getting Started — Pricing](getting-started.md).
 
 <br>
 
