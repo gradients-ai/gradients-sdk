@@ -267,23 +267,39 @@ Your prompts should cover the range of tasks you want the model to handle. If yo
 
 **Reward functions**
 
-Gradients ships with a library of built-in reward functions, organised by category. Browse what's available:
+Gradients ships with a library of parameterized reward function templates, organised by group. Browse what's available:
 
 ```python
 rfns = client.reward_functions.list()
 ```
 
-Access them by category:
+Access by group, then by template:
 
 ```python
-rfns.default.length.short_completions
-rfns.default.vocabulary.high_unique_words
-rfns.default.safety.low_toxicity
-rfns.default.format.think_answer
-rfns.default.reasoning.keywords
+rfns.length              # → word_count, char_count, completion_length
+rfns.readability         # → grade_level, reading_ease, ...
+rfns.word_complexity     # → chars_per_word, syllables_per_word, difficult_word_ratio
+rfns.sentence_structure  # → sentence_count, words_per_sentence
+rfns.vocabulary          # → unique_word_ratio, keyword_presence
+rfns.quality             # → sentiment, fluency
+rfns.format              # → regex
 ```
 
-Pass them directly into `train()` — combine as many as you need, with weights to control the balance:
+Each template accepts parameters to control its behavior. Use them with defaults or set params explicitly:
+
+```python
+# Default params (sampled from valid ranges)
+rfns.length.word_count
+
+# Explicit params
+rfns.length.word_count(target=50)
+rfns.readability.grade_level(target=8.0)
+rfns.format.regex(pattern=r"```[\s\S]*?```")
+rfns.vocabulary.keyword_presence(keywords=["because", "therefore", "however"])
+rfns.quality.sentiment(sign=1)   # 1 = positive, -1 = negative
+```
+
+Combine multiple reward functions with weights. Groups prevent conflicts automatically — two templates from the same group (e.g. two different length metrics) won't produce contradictory training signals:
 
 ```python
 task = client.train(
@@ -293,29 +309,37 @@ task = client.train(
     dataset="your-prompt-dataset",
     field_prompt="prompt",
     reward_functions=[
-        rfns.default.safety.low_toxicity,
-        rfns.default.length.short_completions.weight(0.3),
+        rfns.length.word_count(target=50).weight(1.0),
+        rfns.quality.sentiment(sign=1).weight(0.5),
+        rfns.format.regex(pattern=r"^<think>"),
     ],
 )
 ```
 
-Built-in reward functions:
+Built-in templates and their parameters:
 
-| Category | Functions |
-|---|---|
-| **Length** | `long_completions`, `short_completions`, `specific_char_count`, `specific_word_count` |
-| **Vocabulary** | `high_unique_words`, `low_unique_words` |
-| **Readability** | `high_readability`, `low_readability`, `flesch_kincaid_grade` |
-| **Sentence structure** | `long_sentences`, `short_sentences`, `long_words`, `short_words`, `high_syllables`, `low_syllables` |
-| **Format** | `think_answer` (enforces `<think>...</think><answer>...</answer>`) |
-| **Reasoning** | `keywords` (rewards logical connectors and analytical terms) |
-| **Sentiment** | `positive`, `negative` |
-| **Fluency** | `high_fluency`, `low_fluency` |
-| **Safety** | `low_toxicity`, `low_severe_toxicity`, `low_obscene`, `low_threat`, `low_insult`, `low_identity_attack` |
+| Group | Template | Parameters |
+|---|---|---|
+| **length** | `word_count` | `target` (int, 15–300) |
+| | `char_count` | `target` (int, 100–1500) |
+| | `completion_length` | `sign` (1 = longer, -1 = shorter) |
+| **readability** | `grade_level` | `target` (float, 3.0–16.0) |
+| | `reading_ease` | `target` (float, 20.0–90.0) |
+| | `textstat_directional` | `metric` (flesch_reading_ease, words_per_sentence, etc.), `sign` |
+| **word_complexity** | `chars_per_word` | `target` (float, 3.0–7.0) |
+| | `syllables_per_word` | `target` (float, 1.0–3.5) |
+| | `difficult_word_ratio` | `sign` (1 = more complex, -1 = simpler) |
+| **sentence_structure** | `sentence_count` | `target` (int, 1–15) |
+| | `words_per_sentence` | `target` (float, 5.0–35.0) |
+| **vocabulary** | `unique_word_ratio` | `sign` (1 = more diverse, -1 = more repetitive) |
+| | `keyword_presence` | `keywords` (list of strings) |
+| **quality** | `sentiment` | `sign` (1 = positive, -1 = negative) |
+| | `fluency` | `sign` (1 = more fluent, -1 = less fluent) |
+| **format** | `regex` | `pattern` (regex string) |
 
 **Custom reward functions**
 
-You can define your own. A reward function takes a list of completions and returns a list of scores — higher is better:
+You can register your own. A reward function takes a list of completions and returns a list of scores — higher is better:
 
 ```python
 def my_reward(completions, **kwargs):
@@ -330,7 +354,7 @@ The returned reference works exactly like a built-in — pass it straight into `
 task = client.train(
     ...
     reward_functions=[
-        rfns.default.safety.low_toxicity,
+        rfns.quality.sentiment(sign=1),
         my_code_check,
     ],
 )

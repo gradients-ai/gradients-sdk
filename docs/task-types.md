@@ -199,7 +199,7 @@ This is for problems where you can't write out every correct answer, but you *ca
 
 It's particularly powerful for format compliance, reasoning quality, code correctness, or any domain where automated evaluation is possible.
 
-Your dataset just needs prompts. The reward functions are separate — Gradients ships with a library of built-ins you can browse and combine, and you can register your own. See [Datasets — Reward functions](datasets.md#grpo-datasets) for the full API, available built-ins, and how to create custom reward functions.
+Your dataset just needs prompts. The reward functions are separate — Gradients ships with a library of parameterized templates organised by group (length, readability, vocabulary, quality, format, etc.), and you can register your own. See [Datasets — Reward functions](datasets.md#grpo-datasets) for the full template reference, parameters, and how to create custom reward functions.
 
 With your prompts and reward functions ready, training looks like this:
 
@@ -213,8 +213,9 @@ task = client.train(
     dataset="your-prompt-dataset",
     field_prompt="prompt",
     reward_functions=[
-        rfns.default.safety.low_toxicity,
-        rfns.default.length.short_completions.weight(0.3),
+        rfns.length.word_count(target=50).weight(1.0),
+        rfns.quality.sentiment(sign=1).weight(0.5),
+        rfns.format.regex(pattern=r"^<think>"),
     ],
 )
 
