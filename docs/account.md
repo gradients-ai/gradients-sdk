@@ -2,6 +2,31 @@
 
 <br>
 
+<img src="assets/section-account.svg" width="800" alt="Account and billing">
+
+Create your account at [gradients.io](https://www.gradients.io/) — one-click sign-up. From your dashboard, generate an API key.
+
+Training jobs are funded with TAO. To get your deposit address and check your balance:
+
+```python
+# get TAO deposit address
+deposit = client.account.get_public_key()
+print(deposit["public_key"])
+
+# check balance
+account = client.account.get_info()
+print(account)
+```
+
+Transfer TAO to the deposit address to fund your account. Balance updates are reflected immediately.
+
+> [!NOTE]
+> Account operations require `GRADIENTS_SESSION_TOKEN` in addition to your API key.
+
+<br>
+
+---
+
 <img src="assets/section-pricing.svg" width="800" alt="Pricing">
 
 Pay per hour of training. The rate depends on model size.
@@ -32,26 +57,6 @@ print(quote.total_price)
 # full price table
 prices = client.tasks.prices()
 ```
-
-<br>
-
----
-
-<img src="assets/section-account.svg" width="800" alt="Account and billing">
-
-Training jobs are funded with TAO. These operations require `GRADIENTS_SESSION_TOKEN`:
-
-```python
-# check balance
-account = client.account.get_info()
-print(account)
-
-# get TAO deposit address
-deposit = client.account.get_public_key()
-print(deposit["public_key"])
-```
-
-Transfer TAO to the deposit address to fund your account. Balance updates are reflected immediately.
 
 <br>
 
