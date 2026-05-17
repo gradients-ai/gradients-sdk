@@ -12,7 +12,7 @@ Match your data to a training mode.
 | Multi-turn conversations | **[Chat](#chat)** | `TaskType.CHAT` |
 | Pairs of good and bad responses to the same prompt | **[DPO](#dpo)** | `TaskType.DPO` |
 | Prompts and a way to score outputs programmatically | **[GRPO](#grpo)** | `TaskType.GRPO` |
-| 10–50 images with captions | **[Image](#image)** | `TaskType.IMAGE` |
+| 10–50 images with captions | **[Image Generation](#image)** | `TaskType.IMAGE` |
 
 <br>
 
@@ -25,7 +25,9 @@ Supervised fine-tuning on instruction/response pairs.
 
 Instruct training teaches a model to follow instructions by showing it examples of questions and correct answers. This is the most common and straightforward way to fine-tune a model.
 
-Use Instruct when you have structured data where each row is a task and a desired response. Domain-specific QA, customer support responses, code generation, document summarization — anything where you can express the training data as "given this input, produce this output."
+Say you're a legal firm with thousands of case summaries written by your senior partners. A base model can summarize legal text, but it doesn't write like your team — it misses jurisdiction-specific language, gets the citation format wrong, and buries the conclusion. Instruct training fixes that. You show the model your partners' summaries as examples, and it learns to write in that style.
+
+The same pattern works for customer support (your best agent's responses as training data), medical QA (expert-validated answers), code generation (your internal libraries and conventions), or any task where you can express the goal as "given this input, produce this output."
 
 Dataset fields:
 
@@ -78,7 +80,9 @@ Fine-tune on multi-turn conversations.
 
 Chat training teaches a model to handle back-and-forth dialogue. Instead of single instruction/response pairs, your data is full conversations with multiple turns between a user and an assistant.
 
-Use Chat when your data is naturally conversational — chatbot logs, support transcripts, tutoring sessions, or any scenario where context builds across multiple messages. The model learns not just how to respond, but how to track context across a conversation.
+Imagine you're building an onboarding assistant for a SaaS product. A single question/answer pair doesn't capture how a good onboarding conversation works — the assistant needs to ask clarifying questions, remember what the user said three messages ago, and guide them step by step. If you have transcripts of your best support agents handling onboarding calls, Chat training lets you teach a model to have those same conversations.
+
+This applies anywhere context builds across turns: sales conversations, tutoring sessions, technical troubleshooting, or therapy-style dialogues where tone and continuity matter as much as the content.
 
 Dataset fields:
 
@@ -137,7 +141,9 @@ Preference-based training from chosen vs rejected responses.
 
 DPO (Direct Preference Optimization) trains a model to prefer better responses over worse ones. Instead of showing the model "here's the right answer," you show it two answers to the same prompt and tell it which one is better.
 
-Use DPO when you want to steer a model's behavior — improving tone, reducing harmful outputs, aligning with a house style, or teaching it to prefer concise answers over verbose ones. It's particularly effective when you already have a model that's roughly capable but needs to be refined in how it responds. DPO is the standard approach for alignment and preference tuning.
+This is for when a model already roughly works but its *style* is wrong. Maybe it gives technically correct answers but they're five paragraphs long when your users want two sentences. Maybe it's helpful but too formal, or too casual, or it hedges when it should be direct. You don't need to rewrite every answer from scratch — you just need pairs: "this response was good, this one wasn't." DPO teaches the model to move toward the good ones.
+
+It's the standard approach for alignment: steering tone, reducing harmful outputs, matching a house style, or any case where you can rank outputs but can't easily define the "perfect" one.
 
 Dataset fields:
 
@@ -189,7 +195,9 @@ Reward-driven training using custom scoring functions.
 
 GRPO (Group Relative Policy Optimization) trains a model using reward functions that score its outputs programmatically. Instead of providing correct answers or preference pairs, you define what "good" looks like as code, and the model learns to maximize that score.
 
-Use GRPO when the quality of an output can be measured automatically — code correctness (does it compile?), format compliance (does it follow a schema?), length constraints, reasoning quality, or any custom criteria. GRPO is especially useful when you can't easily write out ideal answers but you can write a function that scores them.
+This is for problems where you can't write out every correct answer, but you *can* check if an answer is good. Building a code assistant? You can't pre-write the solution to every coding problem, but you can check if the output compiles and passes tests. Want a model that always responds in valid JSON? You can't list every valid JSON response, but you can write a function that validates the schema. GRPO lets you express quality as a scoring function and the model learns to optimize for it.
+
+It's particularly powerful for format compliance, reasoning quality, code correctness, or any domain where automated evaluation is possible.
 
 Your dataset needs a prompt column, and you provide reward functions separately:
 
@@ -234,13 +242,13 @@ What happens behind the scenes: GRPO generates multiple completions for each pro
 ---
 
 <a id="image"></a>
-<img src="assets/task-image.svg" width="800" alt="Image">
+<img src="assets/task-image.svg" width="800" alt="Image Generation">
 
-LoRA fine-tuning for image generation models.
+Teach a diffusion model to generate images in your style or of your subject.
 
-Image training teaches a diffusion model to generate images in a specific style or of a specific subject. You provide a small set of images with captions, and the model learns to reproduce that visual concept.
+You have a product, a character, or a visual style that doesn't exist in any stock model. Maybe you're an e-commerce brand and you want to generate lifestyle photos of your product in different settings — on a kitchen counter, in someone's hand, on a shelf. Or you're a game studio and you want to generate concept art in a specific illustration style. Or you're an architect and you want renders that match your firm's presentation aesthetic.
 
-Use Image training when you want a model that generates images of a particular style (illustration, pixel art, architectural renders), a specific subject (a product, a character, a brand aesthetic), or a visual concept that doesn't exist in the base model's training data. You only need 10–50 images.
+You don't need thousands of images. 10–50 captioned examples is enough. The model learns the visual concept and can then generate new images that match it.
 
 Image training expects a zip file containing image/caption pairs with matching filenames:
 
@@ -295,8 +303,7 @@ result = task.wait()
 print(result.trained_model_repository)
 ```
 
-> [!TIP]
-> Supported image models: `sdxl` (Stable Diffusion XL) and `flux` (Flux variants).
+Supported models: `sdxl` (Stable Diffusion XL) and `flux` (Flux variants).
 
 What happens behind the scenes: Image training produces a LoRA adapter for the diffusion model. For SDXL, images are trained with 10 repeats for style concepts and 8 for subject concepts, giving the model enough exposure to learn the visual pattern from a small dataset. Flux models use a different training curve with single repeats. The adapter modifies the model's attention layers to associate your captions with the visual features in your images. All image training runs on a single A100 GPU.
 
