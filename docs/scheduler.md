@@ -4,14 +4,11 @@
 
 <img src="assets/section-when-to-use.svg" width="800" alt="When to use the scheduler">
 
-A single `client.train()` call trains on one dataset in one pass. The scheduler is for when that's not enough.
+A single `client.train()` call handles up to ~300k rows in one pass. The scheduler is for when your data exceeds that.
 
-Use the scheduler when you want to train across multiple datasets, run multiple iterations where each builds on the previous result, or both. Each iteration trains, evaluates, and merges the adapter into the base model — then the next iteration starts from that merged model. The result is cumulative improvement over multiple training passes.
+It splits your data into chunks, trains on each chunk sequentially, and merges the result after each iteration — so the next iteration builds on everything the model has already learned. You get a single merged model at the end that's been trained across all of your data, regardless of size.
 
-This is useful for:
-- **Combining diverse data sources** — train on customer support data, then legal documents, then internal FAQs, each as a separate iteration
-- **Iterative refinement** — multiple passes over large datasets with different chunks per iteration
-- **Progressive training** — start broad, then specialize with increasingly domain-specific data
+You can also combine multiple datasets in a single scheduler job. The scheduler merges and shuffles them before chunking, so the model sees a balanced mix across iterations rather than all of one dataset followed by all of another.
 
 <br>
 
@@ -19,7 +16,7 @@ This is useful for:
 
 <img src="assets/section-creating-a-job.svg" width="800" alt="Creating a job">
 
-A scheduler job needs a task type, a base model, and one or more datasets. The scheduler chunks the data, runs training iterations, and merges the results:
+A scheduler job needs a task type, a base model, and one or more datasets. Here's a job that combines two datasets totalling more than what a single training run could handle:
 
 ```python
 from gradientsio import GradientsClient, SchedulerDataset
@@ -28,7 +25,7 @@ client = GradientsClient()
 
 job = client.scheduler.create_job(
     task_type="InstructText",
-    model_repo="Qwen/Qwen2.5-1.5B-Instruct",
+    model_repo="Qwen/Qwen2.5-3B",
     hours_to_complete=1,
     samples_per_training=80000,
     final_test_size=0.1,
@@ -38,12 +35,20 @@ job = client.scheduler.create_job(
             field_instruction="instruction",
             field_input="input",
             field_output="output",
+            max_rows=200000,
+        ),
+        SchedulerDataset(
+            name="tatsu-lab/alpaca",
+            field_instruction="instruction",
+            field_input="input",
+            field_output="output",
+            max_rows=200000,
         ),
     ],
 )
 ```
 
-The scheduler splits your data into chunks of `samples_per_training` rows. Each chunk becomes one training iteration. After each iteration, the resulting adapter is merged into the base model, and the next iteration trains on top of that.
+The scheduler merges and shuffles the datasets, then splits the combined data into chunks of `samples_per_training` rows. Each chunk becomes one training iteration. After each iteration, the adapter is merged into the base model, and the next iteration trains on top of that — so nothing is forgotten.
 
 `final_test_size` is the proportion of data held out for evaluation (0.1 = 10%).
 
