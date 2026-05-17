@@ -130,6 +130,25 @@ This avoids reloading the model for each call — useful when testing across mul
 
 Your trained model is published to Hugging Face as a standard LoRA adapter. It works with any tool that supports LoRA:
 
+Take the result from any Gradients training job and plug it straight into your serving stack:
+
+```python
+# train your model
+task = client.train(
+    model="Qwen/Qwen2.5-3B",
+    task_type=TaskType.INSTRUCT,
+    hours=2,
+    dataset="your-dataset",
+    field_instruction="instruction",
+    field_input="input",
+    field_output="output",
+)
+result = task.wait()
+trained_model = result.trained_model_repository  # e.g. "gradients-ai/your-model-abc123"
+```
+
+That `trained_model` repo is a standard LoRA adapter on Hugging Face. Use it with any of these:
+
 **vLLM** — high-throughput serving with LoRA hot-loading:
 
 ```python
@@ -141,7 +160,7 @@ llm = LLM(model="Qwen/Qwen2.5-3B", enable_lora=True)
 answers = llm.generate(
     prompts,
     SamplingParams(max_tokens=256),
-    lora_request=LoRARequest("my-adapter", 1, "your-trained-model-repo"),
+    lora_request=LoRARequest("my-adapter", 1, trained_model),
 )
 ```
 
@@ -150,7 +169,7 @@ answers = llm.generate(
 ```bash
 docker run --gpus all \
   -e MODEL_ID=Qwen/Qwen2.5-3B \
-  -e LORA_ADAPTERS=your-trained-model-repo \
+  -e LORA_ADAPTERS=gradients-ai/your-model-abc123 \
   -p 8080:80 \
   ghcr.io/huggingface/text-generation-inference
 ```
@@ -159,22 +178,20 @@ docker run --gpus all \
 
 ```python
 from peft import PeftModel
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM
 
 base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-3B", device_map="auto")
-model = PeftModel.from_pretrained(base, "your-trained-model-repo")
+model = PeftModel.from_pretrained(base, trained_model)
 model = model.merge_and_unload()
 ```
 
-**Merging permanently** — if you want a standalone model without loading the adapter separately, merge and push:
+**Merging permanently** — push a standalone model without the adapter dependency:
 
 ```python
-tokenizer, model = sampler.load_model("your-trained-model-repo", base_model_repo="Qwen/Qwen2.5-3B")
+tokenizer, model = sampler.load_model(trained_model, base_model_repo="Qwen/Qwen2.5-3B")
 model.push_to_hub("your-org/merged-model")
 tokenizer.push_to_hub("your-org/merged-model")
 ```
-
-The merged model can then be served anywhere — no adapter loading required.
 
 <br>
 
