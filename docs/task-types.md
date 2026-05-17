@@ -199,27 +199,13 @@ This is for problems where you can't write out every correct answer, but you *ca
 
 It's particularly powerful for format compliance, reasoning quality, code correctness, or any domain where automated evaluation is possible.
 
-Your dataset needs a prompt column, and you provide reward functions separately:
+Your dataset just needs prompts. The reward functions are separate — Gradients ships with a library of built-ins you can browse and combine, and you can register your own. See [Datasets — Reward functions](datasets.md#grpo-datasets) for the full API, available built-ins, and how to create custom reward functions.
 
-| Field | Required | Description |
-|---|---|---|
-| `field_prompt` | Yes | The input prompt |
-| `reward_functions` | Yes | List of reward function references with weights |
-| `extra_column` | No | Additional data passed to reward functions |
+With your prompts and reward functions ready, training looks like this:
 
 ```python
-from gradientsio import RewardFunctionReference
+rfns = client.reward_functions.list()
 
-rewards = [
-    RewardFunctionReference(reward_id="your-reward-func-id", reward_weight=1.0),
-]
-```
-
-For full dataset preparation details, see [Datasets](datasets.md).
-
-With your prompts and reward functions defined, training looks like this:
-
-```python
 task = client.train(
     model="Qwen/Qwen2.5-7B-Instruct",
     task_type=TaskType.GRPO,
@@ -227,7 +213,8 @@ task = client.train(
     dataset="your-prompt-dataset",
     field_prompt="prompt",
     reward_functions=[
-        RewardFunctionReference(reward_id="your-reward-id", reward_weight=1.0),
+        rfns.default.safety.low_toxicity,
+        rfns.default.length.short_completions.weight(0.3),
     ],
 )
 

@@ -245,6 +245,7 @@ task = client.train(
 
 ---
 
+<a id="grpo-datasets"></a>
 <img src="assets/section-grpo-data.svg" width="800" alt="GRPO datasets">
 
 GRPO datasets are the simplest — you only need prompts. The reward functions handle scoring separately.
@@ -320,17 +321,17 @@ You can define your own. A reward function takes a list of completions and retur
 def my_reward(completions, **kwargs):
     return [score(c) for c in completions]
 
-client.reward_functions.create("my-code-check", my_reward)
+my_code_check = client.reward_functions.create("my-code-check", my_reward)
 ```
 
-Once registered, it's available alongside the built-ins:
+The returned reference works exactly like a built-in — pass it straight into `train()`:
 
 ```python
 task = client.train(
     ...
     reward_functions=[
         rfns.default.safety.low_toxicity,
-        client.reward_functions.my_code_check,
+        my_code_check,
     ],
 )
 ```
