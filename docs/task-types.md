@@ -303,4 +303,4 @@ What happens behind the scenes: Image training produces a LoRA adapter for the d
 
 - **[Datasets](datasets.md)** — How to prepare, format, and upload your data for each task type.
 - **[Configuration](configuration.md)** — Every parameter you can control, plus error handling and failure states.
-- **[Getting Started](getting-started.md)** — End-to-end walkthrough from install to testing a trained model.
+- **[Scheduler](scheduler.md)** — Training on datasets larger than 300k rows across multiple iterations.

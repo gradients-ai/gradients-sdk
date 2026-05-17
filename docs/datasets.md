@@ -497,6 +497,6 @@ A few Gradients-specific things worth knowing:
 
 <img src="assets/section-what-to-read-next.svg" width="800" alt="What to read next">
 
-- **[Task Types](task-types.md)** — Detailed guide for each training mode, with scenarios and what happens under the hood.
 - **[Configuration](configuration.md)** — Every parameter you can control, plus error handling and failure states.
-- **[Getting Started](getting-started.md)** — End-to-end walkthrough from install to testing a trained model.
+- **[Inference](inference.md)** — Test your trained model locally, or deploy with vLLM, TGI, or Transformers.
+- **[Task Types](task-types.md)** — Detailed guide for each training mode, with scenarios and what happens under the hood.

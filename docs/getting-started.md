@@ -158,4 +158,4 @@ For details on failure states and error handling, see [Configuration](configurat
 
 - **[Task Types](task-types.md)** — Instruct is one of five training modes. If you have conversations, use Chat. If you have preference pairs, use DPO. If you want reward-driven training, use GRPO. If you're working with images, there's a mode for that too.
 - **[Datasets](datasets.md)** — The PubMedQA example used a Hugging Face dataset, but you can bring your own data in JSON, CSV, or via S3. This guide covers how to prepare it.
-- **[Configuration](configuration.md)** — Everything you can control: hours, backends, pricing, polling, error handling, and what each parameter actually does.
+- **[Account](account.md)** — Billing, balance, and detailed pricing information.

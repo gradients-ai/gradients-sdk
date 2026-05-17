@@ -160,7 +160,7 @@ llm = LLM(model="Qwen/Qwen2.5-3B", enable_lora=True)
 answers = llm.generate(
     prompts,
     SamplingParams(max_tokens=256),
-    lora_request=LoRARequest("my-adapter", 1, trained_model),
+    lora_request=LoRARequest("gradients-adapter", 1, trained_model),
 )
 ```
 
@@ -199,6 +199,6 @@ tokenizer.push_to_hub("your-org/merged-model")
 
 <img src="assets/section-what-to-read-next.svg" width="800" alt="What to read next">
 
+- **[Architecture](architecture.md)** — How the platform works under the hood — tournaments, validators, miners, and LoRA.
 - **[API Reference](api-reference.md)** — Complete class, method, and type reference.
-- **[Configuration](configuration.md)** — Training parameters, error handling, and polling behavior.
-- **[Getting Started](getting-started.md)** — End-to-end walkthrough from install to testing a trained model.
+- **[Scheduler](scheduler.md)** — Multi-iteration training across multiple datasets.

@@ -65,4 +65,4 @@ prices = client.tasks.prices()
 <img src="assets/section-what-to-read-next.svg" width="800" alt="What to read next">
 
 - **[Getting Started](getting-started.md)** — End-to-end walkthrough from install to testing a trained model.
-- **[Configuration](configuration.md)** — Every training parameter, error handling, and polling behavior.
+- **[Task Types](task-types.md)** — Explore the five training modes and find the right one for your data.
