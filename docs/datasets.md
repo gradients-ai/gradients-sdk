@@ -266,19 +266,25 @@ Your prompts should cover the range of tasks you want the model to handle. If yo
 
 **Reward functions**
 
-A reward function takes a list of completions and returns a list of scores. The signature is:
+Gradients ships with a library of built-in reward functions, organised by category. Browse what's available:
 
 ```python
-def my_reward(completions, **kwargs):
-    """Score each completion. Higher is better."""
-    return [score_completion(c) for c in completions]
+rfns = client.reward_functions.list()
 ```
 
-You can combine multiple reward functions with different weights — for example, score for both code correctness (weight 1.0) and brevity (weight 0.3):
+Access them by category:
 
 ```python
-from gradientsio import RewardFunctionReference
+rfns.default.length.short_completions
+rfns.default.vocabulary.high_unique_words
+rfns.default.safety.low_toxicity
+rfns.default.format.think_answer
+rfns.default.reasoning.keywords
+```
 
+Pass them directly into `train()` — combine as many as you need, with weights to control the balance:
+
+```python
 task = client.train(
     model="Qwen/Qwen2.5-7B-Instruct",
     task_type=TaskType.GRPO,
@@ -286,30 +292,53 @@ task = client.train(
     dataset="your-prompt-dataset",
     field_prompt="prompt",
     reward_functions=[
-        RewardFunctionReference(reward_id="code-correctness", reward_weight=1.0),
-        RewardFunctionReference(reward_id="brevity", reward_weight=0.3),
+        rfns.default.safety.low_toxicity,
+        rfns.default.length.short_completions.weight(0.3),
     ],
 )
 ```
 
-Gradients provides built-in reward functions you can reference by ID:
+Built-in reward functions:
 
 | Category | Functions |
 |---|---|
-| **Length** | `reward_long_completions`, `reward_short_completions`, `reward_specific_char_count`, `reward_specific_word_count` |
-| **Vocabulary** | `reward_high_unique_words_percentage`, `reward_low_unique_words_percentage` |
-| **Readability** | `reward_high_readability`, `reward_low_readability`, `reward_flesch_kincaid_grade` |
-| **Sentence structure** | `reward_long_sentences`, `reward_short_sentences`, `reward_long_words`, `reward_short_words` |
-| **Format** | `reward_think_answer_format` (enforces `<think>...</think><answer>...</answer>` structure) |
-| **Reasoning** | `reward_reasoning_keywords` (rewards logical connectors and analytical terms) |
-| **Sentiment** | `reward_positive_sentiment`, `reward_negative_sentiment` |
-| **Fluency** | `reward_high_fluency`, `reward_low_fluency` |
-| **Safety** | `reward_low_toxicity_score`, `reward_low_severe_toxicity_score`, `reward_low_obscene_score`, `reward_low_threat_score`, `reward_low_insult_score` |
+| **Length** | `long_completions`, `short_completions`, `specific_char_count`, `specific_word_count` |
+| **Vocabulary** | `high_unique_words`, `low_unique_words` |
+| **Readability** | `high_readability`, `low_readability`, `flesch_kincaid_grade` |
+| **Sentence structure** | `long_sentences`, `short_sentences`, `long_words`, `short_words`, `high_syllables`, `low_syllables` |
+| **Format** | `think_answer` (enforces `<think>...</think><answer>...</answer>`) |
+| **Reasoning** | `keywords` (rewards logical connectors and analytical terms) |
+| **Sentiment** | `positive`, `negative` |
+| **Fluency** | `high_fluency`, `low_fluency` |
+| **Safety** | `low_toxicity`, `low_severe_toxicity`, `low_obscene`, `low_threat`, `low_insult`, `low_identity_attack` |
 
-For code-based reward functions that need to execute model output, use `restricted_execution` for safe sandboxed execution:
+**Custom reward functions**
+
+You can define your own. A reward function takes a list of completions and returns a list of scores — higher is better:
 
 ```python
-def code_correctness_reward(completions, extra_data=None, **kwargs):
+def my_reward(completions, **kwargs):
+    return [score(c) for c in completions]
+
+client.reward_functions.create("my-code-check", my_reward)
+```
+
+Once registered, it's available alongside the built-ins:
+
+```python
+task = client.train(
+    ...
+    reward_functions=[
+        rfns.default.safety.low_toxicity,
+        client.reward_functions.my_code_check,
+    ],
+)
+```
+
+For reward functions that execute model-generated code, use `restricted_execution` for sandboxed execution:
+
+```python
+def code_correctness(completions, extra_data=None, **kwargs):
     scores = []
     for response in completions:
         code = extract_code(response)
@@ -318,7 +347,7 @@ def code_correctness_reward(completions, extra_data=None, **kwargs):
     return scores
 ```
 
-`restricted_execution` runs code in a sandbox with no filesystem, network, or import access. Standard built-ins (`sum`, `min`, `max`, `len`, `range`, `sorted`, `enumerate`, `zip`, `map`, `filter`, etc.) are available.
+`restricted_execution` runs in a sandbox with no filesystem, network, or import access. Standard built-ins (`sum`, `min`, `max`, `len`, `range`, `sorted`, `enumerate`, `zip`, `map`, `filter`, etc.) are available.
 
 <br>
 
