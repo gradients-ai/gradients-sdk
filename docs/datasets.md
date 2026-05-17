@@ -247,7 +247,7 @@ task = client.train(
 
 <img src="assets/section-grpo-data.svg" width="800" alt="GRPO datasets">
 
-GRPO datasets are the simplest — you only need prompts. The reward functions you provide separately handle the scoring.
+GRPO datasets are the simplest — you only need prompts. The reward functions handle scoring separately.
 
 | Field | Parameter | Required | Description |
 |---|---|---|---|
@@ -262,18 +262,19 @@ GRPO datasets are the simplest — you only need prompts. The reward functions y
 ]
 ```
 
-The quality of GRPO training depends almost entirely on your reward functions, not the prompts. But the prompts still matter — they should cover the range of tasks you want the model to handle. If your reward function scores code correctness, make sure your prompts include easy, medium, and hard coding tasks. If it scores format compliance, include prompts that naturally produce varied formats.
+Your prompts should cover the range of tasks you want the model to handle. If your reward function scores code correctness, include easy through hard coding tasks. If it scores format compliance, include prompts that naturally produce varied formats.
 
-> [!WARNING]
-> **Bad example — prompts are all the same difficulty:**
-> ```json
-> [
->   {"prompt": "Write a function that adds two numbers."},
->   {"prompt": "Write a function that subtracts two numbers."},
->   {"prompt": "Write a function that multiplies two numbers."}
-> ]
-> ```
-> The model will learn to handle trivial arithmetic functions and struggle with anything harder. Vary the difficulty and type.
+**Reward functions**
+
+A reward function takes a list of completions and returns a list of scores. The signature is:
+
+```python
+def my_reward(completions, **kwargs):
+    """Score each completion. Higher is better."""
+    return [score_completion(c) for c in completions]
+```
+
+You can combine multiple reward functions with different weights — for example, score for both code correctness (weight 1.0) and brevity (weight 0.3):
 
 ```python
 from gradientsio import RewardFunctionReference
@@ -285,10 +286,39 @@ task = client.train(
     dataset="your-prompt-dataset",
     field_prompt="prompt",
     reward_functions=[
-        RewardFunctionReference(reward_id="your-reward-id", reward_weight=1.0),
+        RewardFunctionReference(reward_id="code-correctness", reward_weight=1.0),
+        RewardFunctionReference(reward_id="brevity", reward_weight=0.3),
     ],
 )
 ```
+
+Gradients provides built-in reward functions you can reference by ID:
+
+| Category | Functions |
+|---|---|
+| **Length** | `reward_long_completions`, `reward_short_completions`, `reward_specific_char_count`, `reward_specific_word_count` |
+| **Vocabulary** | `reward_high_unique_words_percentage`, `reward_low_unique_words_percentage` |
+| **Readability** | `reward_high_readability`, `reward_low_readability`, `reward_flesch_kincaid_grade` |
+| **Sentence structure** | `reward_long_sentences`, `reward_short_sentences`, `reward_long_words`, `reward_short_words` |
+| **Format** | `reward_think_answer_format` (enforces `<think>...</think><answer>...</answer>` structure) |
+| **Reasoning** | `reward_reasoning_keywords` (rewards logical connectors and analytical terms) |
+| **Sentiment** | `reward_positive_sentiment`, `reward_negative_sentiment` |
+| **Fluency** | `reward_high_fluency`, `reward_low_fluency` |
+| **Safety** | `reward_low_toxicity_score`, `reward_low_severe_toxicity_score`, `reward_low_obscene_score`, `reward_low_threat_score`, `reward_low_insult_score` |
+
+For code-based reward functions that need to execute model output, use `restricted_execution` for safe sandboxed execution:
+
+```python
+def code_correctness_reward(completions, extra_data=None, **kwargs):
+    scores = []
+    for response in completions:
+        code = extract_code(response)
+        output, error = restricted_execution(code, input_data="")
+        scores.append(1.0 if not error else 0.0)
+    return scores
+```
+
+`restricted_execution` runs code in a sandbox with no filesystem, network, or import access. Standard built-ins (`sum`, `min`, `max`, `len`, `range`, `sorted`, `enumerate`, `zip`, `map`, `filter`, etc.) are available.
 
 <br>
 
@@ -387,14 +417,12 @@ Your JSON files should be arrays of objects with the same field structure as the
 
 <img src="assets/section-tips.svg" width="800" alt="Preparing good training data">
 
-A few things that make a real difference:
+A few Gradients-specific things worth knowing:
 
-- **Consistency matters more than volume.** 500 high-quality examples with a consistent format and style will outperform 50,000 noisy ones. If your data has mixed formats, inconsistent tone, or contradictory examples, the model will learn that inconsistency.
-- **Match the format you want at inference time.** If you want the model to answer in bullet points, your training examples should use bullet points. If you want two-sentence answers, don't train on paragraphs. The model reproduces what it sees.
-- **Use a held-out test set.** Either provide one via `test_data` or let Gradients split automatically. Without a test set, you're flying blind — you won't know if the model actually learned or just memorized.
 - **Column names are flexible.** Your dataset doesn't need to use `instruction`/`input`/`output` as column names. Use whatever makes sense — just set the `field_*` parameters to match.
-- **Start small.** Run a short training job (1 hour) on a small model first to validate your data format and field mappings before committing to a longer run on a larger model.
-- **Deduplicate.** Repeated examples don't help — they just make the model overfit to those specific responses. Remove exact and near-duplicates before training.
+- **Test sets are optional but useful.** Provide one via `test_data` for an honest evaluation, or let Gradients split automatically.
+- **Validate your field mappings early.** Run a short job (1 hour, small model) to confirm your data format and column mappings are correct before committing to a longer run.
+- **Multiple reward functions can be combined.** For GRPO, use `reward_weight` to balance competing objectives — e.g. correctness (1.0) vs brevity (0.3).
 
 <br>
 
