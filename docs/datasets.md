@@ -285,6 +285,19 @@ rfns.quality             # → sentiment, fluency
 rfns.format              # → regex
 ```
 
+Inspect any template to see its description, parameters, and source:
+
+```python
+rfns.length.word_count.describe()
+# RewardTemplate(
+#   name='word_count',
+#   description='Reward completions close to a target word count',
+#   scoring_mode='target',
+#   params={'target': ParamSpec(type=int, range=15–300)},
+#   source='def reward_word_count(completions, **kwargs): ...'
+# )
+```
+
 Each template accepts parameters to control its behavior. Use them with defaults or set params explicitly:
 
 ```python
