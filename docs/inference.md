@@ -1,0 +1,187 @@
+<img src="assets/banner-inference.svg" width="800" alt="Inference">
+
+<br>
+
+Gradients trains your model and publishes it to Hugging Face. How you run inference is up to you — the output is a standard LoRA adapter or merged model, compatible with any serving stack.
+
+The SDK includes `ModelSampler`, a lightweight utility for quick local testing. For production, you'll want a dedicated serving solution.
+
+<br>
+
+<img src="assets/section-model-sampler.svg" width="800" alt="ModelSampler">
+
+`ModelSampler` is a convenience wrapper around Hugging Face Transformers for quick testing. It loads a model, runs prompts through it, and returns the outputs. It handles adapter detection and merging automatically.
+
+> [!NOTE]
+> `ModelSampler` requires a CUDA GPU and PyTorch with CUDA support. It's designed for testing, not production serving.
+
+```python
+from gradientsio import ModelSampler
+
+sampler = ModelSampler()
+
+# check GPU availability
+print(sampler.cuda_status())
+```
+
+Generate with a base model:
+
+```python
+answers = sampler.generate("Qwen/Qwen2.5-3B", ["What is DNA?"])
+print(answers[0])
+```
+
+Generate with your trained adapter, merged on-the-fly with the base model:
+
+```python
+answers = sampler.generate_with_adapter(
+    "your-trained-model-repo",
+    ["What is DNA?"],
+    base_model_repo="Qwen/Qwen2.5-3B",
+)
+print(answers[0])
+```
+
+Compare both side by side:
+
+```python
+from gradientsio import load_dataset_rows
+
+samples = load_dataset_rows("your-test-dataset", sample_size=5)
+prompts = [s["instruction"] for s in samples]
+
+base = sampler.generate("Qwen/Qwen2.5-3B", prompts)
+trained = sampler.generate_with_adapter("your-trained-model-repo", prompts, base_model_repo="Qwen/Qwen2.5-3B")
+
+for s, b, t in zip(samples, base, trained):
+    print(f"Q: {s['instruction'][:80]}...")
+    print(f"Base:    {b[:120]}...")
+    print(f"Trained: {t[:120]}...")
+    print()
+```
+
+<br>
+
+---
+
+<img src="assets/section-generation-config.svg" width="800" alt="Generation config">
+
+Control generation behavior with `GenerationConfig`:
+
+```python
+from gradientsio import GenerationConfig
+
+config = GenerationConfig(
+    max_new_tokens=256,
+    do_sample=True,
+    repetition_penalty=1.2,
+    num_beams=1,
+    max_input_tokens=4096,
+)
+
+answers = sampler.generate("Qwen/Qwen2.5-3B", prompts, config=config)
+```
+
+| Parameter | Default | Description |
+|---|---|---|
+| `max_new_tokens` | `96` | Maximum tokens to generate per prompt |
+| `do_sample` | `False` | `True` for sampling, `False` for greedy/beam search |
+| `repetition_penalty` | `1.12` | Penalizes repeated tokens. Higher = less repetition |
+| `num_beams` | `4` | Beam search width. Set to `1` for greedy decoding |
+| `max_input_tokens` | `3072` | Truncates input to this length |
+
+For quick tests, the defaults are fine. If outputs are cut short, increase `max_new_tokens`. If they're repetitive, increase `repetition_penalty` or try `do_sample=True`.
+
+<br>
+
+---
+
+<img src="assets/section-adapters.svg" width="800" alt="Working with adapters">
+
+Gradients training produces LoRA adapters — small weight files that modify the base model's behavior without replacing it. `ModelSampler` detects adapters automatically and merges them on-the-fly.
+
+If you need more control, load the model and adapter manually:
+
+```python
+tokenizer, model = sampler.load_model(
+    "your-trained-model-repo",
+    base_model_repo="Qwen/Qwen2.5-3B",
+)
+
+# run multiple prompts without reloading
+answers = sampler.generate_with_model(tokenizer, model, prompts)
+more_answers = sampler.generate_with_model(tokenizer, model, more_prompts)
+
+# free GPU memory when done
+ModelSampler.release_model(model)
+```
+
+This avoids reloading the model for each call — useful when testing across multiple prompt sets.
+
+`load_model` auto-detects whether the repo contains a LoRA adapter (by checking for `adapter_config.json`) or a full model, and handles both cases.
+
+<br>
+
+---
+
+<img src="assets/section-beyond-sampler.svg" width="800" alt="Beyond ModelSampler">
+
+`ModelSampler` is for quick validation — it loads the model fresh each time and processes prompts sequentially. For anything beyond testing, use a proper serving stack.
+
+Your trained model is published to Hugging Face as a standard LoRA adapter. It works with any tool that supports LoRA:
+
+**vLLM** — high-throughput serving with LoRA hot-loading:
+
+```python
+from vllm import LLM, SamplingParams
+from vllm.lora.request import LoRARequest
+
+llm = LLM(model="Qwen/Qwen2.5-3B", enable_lora=True)
+
+answers = llm.generate(
+    prompts,
+    SamplingParams(max_tokens=256),
+    lora_request=LoRARequest("my-adapter", 1, "your-trained-model-repo"),
+)
+```
+
+**Text Generation Inference (TGI)** — deploy as a Docker container:
+
+```bash
+docker run --gpus all \
+  -e MODEL_ID=Qwen/Qwen2.5-3B \
+  -e LORA_ADAPTERS=your-trained-model-repo \
+  -p 8080:80 \
+  ghcr.io/huggingface/text-generation-inference
+```
+
+**Transformers + PEFT** — direct Python usage:
+
+```python
+from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+base = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-3B", device_map="auto")
+model = PeftModel.from_pretrained(base, "your-trained-model-repo")
+model = model.merge_and_unload()
+```
+
+**Merging permanently** — if you want a standalone model without loading the adapter separately, merge and push:
+
+```python
+tokenizer, model = sampler.load_model("your-trained-model-repo", base_model_repo="Qwen/Qwen2.5-3B")
+model.push_to_hub("your-org/merged-model")
+tokenizer.push_to_hub("your-org/merged-model")
+```
+
+The merged model can then be served anywhere — no adapter loading required.
+
+<br>
+
+---
+
+<img src="assets/section-what-to-read-next.svg" width="800" alt="What to read next">
+
+- **[API Reference](api-reference.md)** — Complete class, method, and type reference.
+- **[Configuration](configuration.md)** — Training parameters, error handling, and polling behavior.
+- **[Getting Started](getting-started.md)** — End-to-end walkthrough from install to testing a trained model.
