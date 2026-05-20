@@ -130,6 +130,21 @@ This avoids reloading the model for each call — useful when testing across mul
 
 Your trained model is published to Hugging Face as a standard LoRA adapter. It works with any tool that supports LoRA:
 
+**RunPod deployment from the SDK** — provision an H100 vLLM pod and get an endpoint:
+
+```python
+import gradientsio
+
+deployment = gradientsio.deploy_runpod(
+    base_model="Qwen/Qwen2.5-3B",
+    lora="gradients-ai/your-model-abc123",
+)
+deployment.wait_ready(timeout=1800)
+
+sampler = deployment.sampler()
+answers = sampler.generate(["What is DNA?"], max_tokens=256)
+```
+
 Take the result from any Gradients training job and plug it straight into your serving stack:
 
 ```python
@@ -201,4 +216,5 @@ tokenizer.push_to_hub("your-org/merged-model")
 
 - **[Architecture](architecture.md)** — How the platform works under the hood — tournaments, validators, miners, and LoRA.
 - **[API Reference](api-reference.md)** — Complete class, method, and type reference.
+- **[Deployment](deployment.md)** — Deploy a trained LoRA adapter to RunPod with vLLM.
 - **[Scheduler](scheduler.md)** — Multi-iteration training across multiple datasets.

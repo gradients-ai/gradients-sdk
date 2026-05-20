@@ -47,6 +47,10 @@ Go deeper on training modes, data preparation, and configuration.
     <td>Test your fine-tuned model locally with ModelSampler.</td>
   </tr>
   <tr>
+    <td><strong><a href="deployment.md">Deployment</a></strong></td>
+    <td>Deploy a trained LoRA adapter to RunPod with vLLM.</td>
+  </tr>
+  <tr>
     <td><strong><a href="account.md">Account</a></strong></td>
     <td>Billing, balance, pricing, and funding your account.</td>
   </tr>

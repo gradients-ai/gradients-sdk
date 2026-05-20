@@ -67,6 +67,28 @@ class Backend(str, Enum):
     OBLIVUS = "oblivus"
 
 
+class DeploymentProvider(str, Enum):
+    RUNPOD = "runpod"
+    CHUTES = "chutes"
+    LIUM = "lium"
+
+
+class DeploymentStatus(str, Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    EXITED = "exited"
+    TERMINATED = "terminated"
+    UNKNOWN = "unknown"
+
+    @property
+    def is_terminal(self) -> bool:
+        return self in {DeploymentStatus.EXITED, DeploymentStatus.TERMINATED}
+
+    @property
+    def is_running(self) -> bool:
+        return self == DeploymentStatus.RUNNING
+
+
 ACTIVE_TASK_STATUSES = {
     TaskStatus.PENDING,
     TaskStatus.PREPARING_DATA,
@@ -229,6 +251,64 @@ class PriceQuote(SDKModel):
     total_price: float | None = None
     currency: str | None = None
     raw: dict[str, Any] | None = None
+
+
+class RunPodDeploymentRequest(SDKModel):
+    base_model: str
+    lora: str | None = None
+    template_id: str | None = None
+    deployment_name: str | None = None
+    deployment_key: str | None = None
+    port: int = 8000
+    gpu_type_ids: list[str] | None = None
+    gpu_count: int | None = None
+    docker_start_cmd: list[str] | None = None
+    env: dict[str, str] = Field(default_factory=dict)
+
+
+class RunPodPod(SDKModel):
+    id: str
+    name: str | None = None
+    desiredStatus: str | None = None
+    lastStatusChange: str | None = None
+    env: dict[str, Any] | None = None
+    ports: list[str] | None = None
+    publicIp: str | None = None
+    runtime: dict[str, Any] | None = None
+    templateId: str | None = None
+
+    @property
+    def normalized_status(self) -> DeploymentStatus:
+        status = (self.desiredStatus or "").lower()
+        try:
+            return DeploymentStatus(status)
+        except ValueError:
+            return DeploymentStatus.UNKNOWN
+
+
+class DeploymentDetails(SDKModel):
+    provider: DeploymentProvider | str
+    id: str
+    deployment_key: str
+    base_model: str
+    lora: str | None = None
+    status: DeploymentStatus | str = DeploymentStatus.UNKNOWN
+    server_url: str
+    pod: RunPodPod | None = None
+
+    @property
+    def is_running(self) -> bool:
+        try:
+            return DeploymentStatus(self.status).is_running
+        except ValueError:
+            return False
+
+    @property
+    def is_terminal(self) -> bool:
+        try:
+            return DeploymentStatus(self.status).is_terminal
+        except ValueError:
+            return False
 
 
 class SchedulerDataset(SDKModel):

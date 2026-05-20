@@ -6,6 +6,11 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
+import httpx
+
+from gradientsio.constants import HUGGING_FACE_HUB_TOKEN_ENV
+from gradientsio.constants import HUGGING_FACE_TOKEN_ENV
+
 
 @dataclass(frozen=True)
 class GenerationConfig:
@@ -41,7 +46,7 @@ class ModelSampler:
         require_cuda: bool = True,
         trust_remote_code: bool = True,
     ) -> None:
-        self.hf_token = hf_token or os.getenv("HF_TOKEN") or os.getenv("HUGGING_FACE_HUB_TOKEN")
+        self.hf_token = hf_token or os.getenv(HUGGING_FACE_TOKEN_ENV) or os.getenv(HUGGING_FACE_HUB_TOKEN_ENV)
         self.require_cuda = require_cuda
         self.trust_remote_code = trust_remote_code
         from huggingface_hub import HfApi  # type: ignore[reportMissingImports]
@@ -198,3 +203,76 @@ def _torch() -> Any:
     import torch  # type: ignore[reportMissingImports]
 
     return torch
+
+
+class RemoteVLLMSampler:
+    def __init__(
+        self,
+        *,
+        base_url: str,
+        model: str,
+        api_key: str | None = None,
+        timeout: float | httpx.Timeout = 60.0,
+        http_client: httpx.Client | None = None,
+    ) -> None:
+        self.base_url = base_url.rstrip("/")
+        self.model = model
+        self.api_key = api_key
+        self._owns_client = http_client is None
+        self._client = http_client or httpx.Client(timeout=timeout)
+
+    def close(self) -> None:
+        if self._owns_client:
+            self._client.close()
+
+    def generate(
+        self,
+        prompts: list[str],
+        *,
+        config: GenerationConfig | None = None,
+        **kwargs: Any,
+    ) -> list[str]:
+        config = config or GenerationConfig()
+        payload = {
+            "model": self.model,
+            "prompt": prompts,
+            "max_tokens": config.max_new_tokens,
+            "temperature": 0 if not config.do_sample else kwargs.pop("temperature", 0.7),
+            "repetition_penalty": config.repetition_penalty,
+            **kwargs,
+        }
+        response = self._post("/v1/completions", payload)
+        choices = response.get("choices", [])
+        return [str(choice.get("text", "")) for choice in choices]
+
+    def chat(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        config: GenerationConfig | None = None,
+        **kwargs: Any,
+    ) -> str:
+        config = config or GenerationConfig()
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": config.max_new_tokens,
+            "temperature": 0 if not config.do_sample else kwargs.pop("temperature", 0.7),
+            "repetition_penalty": config.repetition_penalty,
+            **kwargs,
+        }
+        response = self._post("/v1/chat/completions", payload)
+        choices = response.get("choices", [])
+        if not choices:
+            return ""
+        message = choices[0].get("message") or {}
+        return str(message.get("content", ""))
+
+    def _post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
+        headers = {"Accept": "application/json", "Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        response = self._client.post(f"{self.base_url}/{path.lstrip('/')}", headers=headers, json=payload)
+        response.raise_for_status()
+        return response.json()

@@ -10,15 +10,15 @@ import httpx
 
 from gradientsio._transport import Transport
 from gradientsio.account import AccountClient
+from gradientsio.constants import GRADIENTS_API_BASE_URL
+from gradientsio.constants import GRADIENTS_API_KEY_ENV
+from gradientsio.constants import GRADIENTS_SESSION_TOKEN_ENV
+from gradientsio.deployment import DeploymentClient
+from gradientsio.deployment import RunPodDeployment
 from gradientsio.performance import PerformanceClient
 from gradientsio.scheduler import SchedulerClient
 from gradientsio.tasks import TasksClient
 from gradientsio.tasks import TrainingTask
-
-
-DEFAULT_BASE_URL = "https://api.gradients.io"
-API_KEY_ENV = "GRADIENTS_API_KEY"
-SESSION_TOKEN_ENV = "GRADIENTS_SESSION_TOKEN"
 
 
 class GradientsClient:
@@ -31,9 +31,11 @@ class GradientsClient:
         max_retries: int = 2,
         http_client: httpx.Client | None = None,
     ) -> None:
-        self.api_key = api_key if api_key is not None else os.getenv(API_KEY_ENV)
-        self.session_token = session_token if session_token is not None else os.getenv(SESSION_TOKEN_ENV)
-        self.base_url = DEFAULT_BASE_URL
+        self.api_key = api_key if api_key is not None else os.getenv(GRADIENTS_API_KEY_ENV)
+        self.session_token = (
+            session_token if session_token is not None else os.getenv(GRADIENTS_SESSION_TOKEN_ENV)
+        )
+        self.base_url = GRADIENTS_API_BASE_URL
         self._transport = Transport(
             base_url=self.base_url,
             api_key=self.api_key,
@@ -46,6 +48,7 @@ class GradientsClient:
         self.tasks = TasksClient(self._transport)
         self.scheduler = SchedulerClient(self._transport)
         self.performance = PerformanceClient(self._transport)
+        self.deployments = DeploymentClient(timeout=timeout)
 
     @classmethod
     def from_env(cls, **kwargs: object) -> "GradientsClient":
@@ -53,6 +56,7 @@ class GradientsClient:
 
     def close(self) -> None:
         self._transport.close()
+        self.deployments.close()
 
     def __enter__(self) -> "GradientsClient":
         return self
@@ -83,6 +87,9 @@ class GradientsClient:
             **kwargs,
         )
         return trainer.train()
+
+    def deploy_runpod(self, **kwargs: Any) -> RunPodDeployment:
+        return self.deployments.deploy_runpod(**kwargs)
 
 
 class TaskType(str, Enum):

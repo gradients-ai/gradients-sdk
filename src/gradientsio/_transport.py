@@ -8,6 +8,7 @@ from typing import Any
 import httpx
 from pydantic import BaseModel
 
+from gradientsio.constants import SAFE_HTTP_METHODS
 from gradientsio.errors import APIError
 from gradientsio.errors import AuthenticationError
 from gradientsio.errors import AuthorizationError
@@ -15,9 +16,6 @@ from gradientsio.errors import NetworkError
 from gradientsio.errors import NotFoundError
 from gradientsio.errors import RateLimitError
 from gradientsio.errors import ValidationError
-
-
-SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 
 
 def _sdk_version() -> str:
@@ -117,7 +115,7 @@ class Transport:
         if token:
             headers["Authorization"] = f"Bearer {token}"
 
-        attempts = self.max_retries + 1 if method in SAFE_METHODS else 1
+        attempts = self.max_retries + 1 if method in SAFE_HTTP_METHODS else 1
         last_error: Exception | None = None
 
         for attempt in range(attempts):
