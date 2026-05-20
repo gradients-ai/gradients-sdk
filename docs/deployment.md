@@ -1,4 +1,4 @@
-<img src="assets/banner-inference.svg" width="800" alt="Deployment">
+<img src="assets/banner-deployments.svg" width="800" alt="Deployment">
 
 <br>
 
