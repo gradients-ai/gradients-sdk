@@ -3,18 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from typing import Any
 
+from gradientsio.constants import SESSION_TOKEN_REQUIRED_MESSAGE
 from gradientsio.errors import ConfigurationError
 
 
 if TYPE_CHECKING:
     from gradientsio._transport import Transport
-
-
-SESSION_TOKEN_REQUIRED_MESSAGE = (
-    "Account endpoints require a Gradients session token, not a Gradients API key. "
-    "Set GRADIENTS_SESSION_TOKEN or pass session_token=... to GradientsClient to use "
-    "client.account.get_info() and client.account.get_public_key()."
-)
 
 
 class AccountClient:

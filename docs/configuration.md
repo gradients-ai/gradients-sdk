@@ -197,6 +197,7 @@ The SDK automatically retries safe requests (GET, HEAD, OPTIONS) on transient fa
 |---|---|---|
 | `GRADIENTS_API_KEY` | Yes | API key for all training and task operations |
 | `GRADIENTS_SESSION_TOKEN` | No | Session token — only needed for account balance and deposit operations |
+| `RUNPOD_API_KEY` | For RunPod deployment | RunPod API key used by `deploy_runpod()`; read from the environment only |
 
 The API key can also be passed directly to the client:
 
@@ -219,4 +220,5 @@ For local inference with `ModelSampler`, you may also need:
 
 - **[Scheduler](scheduler.md)** — Multi-iteration training across multiple datasets.
 - **[Inference](inference.md)** — Test your fine-tuned model locally with ModelSampler.
+- **[Deployment](deployment.md)** — Deploy a trained LoRA adapter to RunPod with vLLM.
 - **[API Reference](api-reference.md)** — Complete class, method, and type reference.
