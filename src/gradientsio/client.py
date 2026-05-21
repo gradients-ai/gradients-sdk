@@ -14,6 +14,7 @@ from gradientsio.constants import GRADIENTS_API_BASE_URL
 from gradientsio.constants import GRADIENTS_API_KEY_ENV
 from gradientsio.constants import GRADIENTS_SESSION_TOKEN_ENV
 from gradientsio.deployment import DeploymentClient
+from gradientsio.deployment import LocalVLLMDeployment
 from gradientsio.deployment import RunPodDeployment
 from gradientsio.performance import PerformanceClient
 from gradientsio.scheduler import SchedulerClient
@@ -90,6 +91,9 @@ class GradientsClient:
 
     def deploy_runpod(self, **kwargs: Any) -> RunPodDeployment:
         return self.deployments.deploy_runpod(**kwargs)
+
+    def deploy_local_vllm(self, **kwargs: Any) -> LocalVLLMDeployment:
+        return self.deployments.deploy_local_vllm(**kwargs)
 
 
 class TaskType(str, Enum):

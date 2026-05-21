@@ -44,11 +44,11 @@ Go deeper on training modes, data preparation, and configuration.
   </tr>
   <tr>
     <td><strong><a href="inference.md">Inference</a></strong></td>
-    <td>Test your fine-tuned model locally with ModelSampler.</td>
+    <td>Sample from local or cloud vLLM servers.</td>
   </tr>
   <tr>
     <td><strong><a href="deployment.md">Deployment</a></strong></td>
-    <td>Deploy a trained LoRA adapter to RunPod with vLLM.</td>
+    <td>Serve base models and LoRA adapters locally or on RunPod.</td>
   </tr>
   <tr>
     <td><strong><a href="account.md">Account</a></strong></td>

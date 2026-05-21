@@ -233,6 +233,6 @@ Full parameter reference for `client.scheduler.create_job()`:
 
 <img src="assets/section-what-to-read-next.svg" width="800" alt="What to read next">
 
-- **[Inference](inference.md)** — Test your fine-tuned model locally with ModelSampler.
+- **[Inference](inference.md)** — Test your fine-tuned model through local or cloud vLLM servers.
 - **[Configuration](configuration.md)** — Training parameters, error handling, and polling behavior.
 - **[Datasets](datasets.md)** — Data preparation for each task type.

@@ -498,5 +498,5 @@ A few Gradients-specific things worth knowing:
 <img src="assets/section-what-to-read-next.svg" width="800" alt="What to read next">
 
 - **[Configuration](configuration.md)** — Every parameter you can control, plus error handling and failure states.
-- **[Inference](inference.md)** — Test your trained model locally, or deploy with vLLM, TGI, or Transformers.
+- **[Inference](inference.md)** — Test your trained model with local vLLM or a cloud deployment.
 - **[Task Types](task-types.md)** — Detailed guide for each training mode, with scenarios and what happens under the hood.

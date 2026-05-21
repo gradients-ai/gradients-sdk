@@ -10,6 +10,14 @@ import httpx
 
 from gradientsio.constants import HUGGING_FACE_HUB_TOKEN_ENV
 from gradientsio.constants import HUGGING_FACE_TOKEN_ENV
+from gradientsio.models import DeploymentProvider
+
+
+TRANSFORMERS_BACKEND = "transformers"
+DEFAULT_TOP_P = 1.0
+DEFAULT_N = 1
+DEFAULT_PRESENCE_PENALTY = 0.0
+DEFAULT_FREQUENCY_PENALTY = 0.0
 
 
 @dataclass(frozen=True)
@@ -42,13 +50,23 @@ class ModelSampler:
     def __init__(
         self,
         *,
+        backend: DeploymentProvider | str = DeploymentProvider.LOCAL,
         hf_token: str | None = None,
         require_cuda: bool = True,
         trust_remote_code: bool = True,
+        server_url: str | None = None,
+        server_model: str | None = None,
+        keep_server_alive: bool = False,
+        vllm_kwargs: dict[str, Any] | None = None,
     ) -> None:
+        self.backend = _coerce_sampler_backend(backend)
         self.hf_token = hf_token or os.getenv(HUGGING_FACE_TOKEN_ENV) or os.getenv(HUGGING_FACE_HUB_TOKEN_ENV)
         self.require_cuda = require_cuda
         self.trust_remote_code = trust_remote_code
+        self.server_url = server_url
+        self.server_model = server_model
+        self.keep_server_alive = keep_server_alive
+        self.vllm_kwargs = vllm_kwargs or {}
         from huggingface_hub import HfApi  # type: ignore[reportMissingImports]
 
         self._api = HfApi(token=self.hf_token)
@@ -64,7 +82,24 @@ class ModelSampler:
             )
         return "Warning: CUDA unavailable; inference will use CPU."
 
-    def generate(self, model_repo: str, prompts: list[str], *, config: GenerationConfig | None = None) -> list[str]:
+    def generate(
+        self,
+        model_repo: str,
+        prompts: list[str],
+        *,
+        config: GenerationConfig | None = None,
+        **kwargs: Any,
+    ) -> list[str]:
+        if self.backend == DeploymentProvider.LOCAL:
+            return self._generate_with_vllm(
+                base_model_repo=model_repo,
+                lora_repo=None,
+                prompts=prompts,
+                config=config,
+                **kwargs,
+            )
+        if kwargs:
+            raise ValueError("OpenAI/vLLM request parameters are only supported for the local vLLM backend.")
         return self._timed_generate("model", model_repo, prompts, config=config)
 
     def generate_with_adapter(
@@ -74,7 +109,18 @@ class ModelSampler:
         *,
         base_model_repo: str,
         config: GenerationConfig | None = None,
+        **kwargs: Any,
     ) -> list[str]:
+        if self.backend == DeploymentProvider.LOCAL:
+            return self._generate_with_vllm(
+                base_model_repo=base_model_repo,
+                lora_repo=adapter_or_model_repo,
+                prompts=prompts,
+                config=config,
+                **kwargs,
+            )
+        if kwargs:
+            raise ValueError("OpenAI/vLLM request parameters are only supported for the local vLLM backend.")
         return self._timed_generate(
             "adapter",
             adapter_or_model_repo,
@@ -198,11 +244,56 @@ class ModelSampler:
         print(f"[{label}] Finished in {time.perf_counter() - started:.1f}s", flush=True)
         return answers
 
+    def _generate_with_vllm(
+        self,
+        *,
+        base_model_repo: str,
+        lora_repo: str | None,
+        prompts: list[str],
+        config: GenerationConfig | None,
+        **kwargs: Any,
+    ) -> list[str]:
+        if self.server_url:
+            model = self.server_model or lora_repo or base_model_repo
+            return RemoteVLLMSampler(base_url=self.server_url, model=model).generate(prompts, config=config, **kwargs)
+
+        from gradientsio.deployment import deploy_local_vllm
+
+        deployment = deploy_local_vllm(
+            base_model=base_model_repo,
+            lora=lora_repo,
+            hf_token=self.hf_token,
+            trust_remote_code=self.trust_remote_code,
+            **self.vllm_kwargs,
+        )
+        try:
+            return deployment.sampler().generate(prompts, config=config, **kwargs)
+        finally:
+            if deployment.started_by_sdk and not self.keep_server_alive:
+                deployment.stop()
+
 
 def _torch() -> Any:
     import torch  # type: ignore[reportMissingImports]
 
     return torch
+
+
+def _coerce_sampler_backend(backend: DeploymentProvider | str) -> DeploymentProvider | str:
+    if isinstance(backend, DeploymentProvider):
+        return backend
+    normalized = backend.lower()
+    if normalized == "vllm":
+        return DeploymentProvider.LOCAL
+    if normalized == TRANSFORMERS_BACKEND:
+        return TRANSFORMERS_BACKEND
+    return DeploymentProvider(normalized)
+
+
+def _set_optional_payload_fields(payload: dict[str, Any], **fields: Any) -> None:
+    for key, value in fields.items():
+        if value is not None:
+            payload[key] = value
 
 
 class RemoteVLLMSampler:
@@ -230,17 +321,68 @@ class RemoteVLLMSampler:
         prompts: list[str],
         *,
         config: GenerationConfig | None = None,
+        max_tokens: int | None = None,
+        temperature: float | None = None,
+        top_p: float = DEFAULT_TOP_P,
+        n: int = DEFAULT_N,
+        stream: bool = False,
+        stop: str | list[str] | None = None,
+        presence_penalty: float = DEFAULT_PRESENCE_PENALTY,
+        frequency_penalty: float = DEFAULT_FREQUENCY_PENALTY,
+        repetition_penalty: float | None = None,
+        logit_bias: dict[str, float] | None = None,
+        user: str | None = None,
+        seed: int | None = None,
+        best_of: int | None = None,
+        logprobs: int | None = None,
+        prompt_logprobs: int | None = None,
+        echo: bool = False,
+        suffix: str | None = None,
+        top_k: int | None = None,
+        min_p: float | None = None,
+        min_tokens: int | None = None,
+        ignore_eos: bool = False,
+        skip_special_tokens: bool = True,
+        spaces_between_special_tokens: bool = True,
         **kwargs: Any,
     ) -> list[str]:
+        if stream:
+            raise NotImplementedError("Streaming responses are not supported by RemoteVLLMSampler.generate().")
         config = config or GenerationConfig()
+        resolved_temperature = temperature
+        if resolved_temperature is None:
+            resolved_temperature = 0 if not config.do_sample else 0.7
         payload = {
             "model": self.model,
             "prompt": prompts,
-            "max_tokens": config.max_new_tokens,
-            "temperature": 0 if not config.do_sample else kwargs.pop("temperature", 0.7),
-            "repetition_penalty": config.repetition_penalty,
+            "max_tokens": max_tokens or config.max_new_tokens,
+            "temperature": resolved_temperature,
+            "top_p": top_p,
+            "n": n,
+            "stream": stream,
+            "presence_penalty": presence_penalty,
+            "frequency_penalty": frequency_penalty,
+            "repetition_penalty": repetition_penalty or config.repetition_penalty,
+            "echo": echo,
+            "ignore_eos": ignore_eos,
+            "skip_special_tokens": skip_special_tokens,
+            "spaces_between_special_tokens": spaces_between_special_tokens,
             **kwargs,
         }
+        _set_optional_payload_fields(
+            payload,
+            stop=stop,
+            logit_bias=logit_bias,
+            user=user,
+            seed=seed,
+            best_of=best_of,
+            logprobs=logprobs,
+            prompt_logprobs=prompt_logprobs,
+            suffix=suffix,
+            top_k=top_k,
+            min_p=min_p,
+            min_tokens=min_tokens,
+        )
         response = self._post("/v1/completions", payload)
         choices = response.get("choices", [])
         return [str(choice.get("text", "")) for choice in choices]
@@ -250,17 +392,64 @@ class RemoteVLLMSampler:
         messages: list[dict[str, str]],
         *,
         config: GenerationConfig | None = None,
+        max_tokens: int | None = None,
+        temperature: float | None = None,
+        top_p: float = DEFAULT_TOP_P,
+        n: int = DEFAULT_N,
+        stream: bool = False,
+        stop: str | list[str] | None = None,
+        presence_penalty: float = DEFAULT_PRESENCE_PENALTY,
+        frequency_penalty: float = DEFAULT_FREQUENCY_PENALTY,
+        repetition_penalty: float | None = None,
+        logit_bias: dict[str, float] | None = None,
+        user: str | None = None,
+        seed: int | None = None,
+        top_k: int | None = None,
+        min_p: float | None = None,
+        min_tokens: int | None = None,
+        ignore_eos: bool = False,
+        skip_special_tokens: bool = True,
+        spaces_between_special_tokens: bool = True,
+        response_format: dict[str, Any] | None = None,
+        tools: list[dict[str, Any]] | None = None,
+        tool_choice: str | dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> str:
+        if stream:
+            raise NotImplementedError("Streaming responses are not supported by RemoteVLLMSampler.chat().")
         config = config or GenerationConfig()
+        resolved_temperature = temperature
+        if resolved_temperature is None:
+            resolved_temperature = 0 if not config.do_sample else 0.7
         payload = {
             "model": self.model,
             "messages": messages,
-            "max_tokens": config.max_new_tokens,
-            "temperature": 0 if not config.do_sample else kwargs.pop("temperature", 0.7),
-            "repetition_penalty": config.repetition_penalty,
+            "max_tokens": max_tokens or config.max_new_tokens,
+            "temperature": resolved_temperature,
+            "top_p": top_p,
+            "n": n,
+            "stream": stream,
+            "presence_penalty": presence_penalty,
+            "frequency_penalty": frequency_penalty,
+            "repetition_penalty": repetition_penalty or config.repetition_penalty,
+            "ignore_eos": ignore_eos,
+            "skip_special_tokens": skip_special_tokens,
+            "spaces_between_special_tokens": spaces_between_special_tokens,
             **kwargs,
         }
+        _set_optional_payload_fields(
+            payload,
+            stop=stop,
+            logit_bias=logit_bias,
+            user=user,
+            seed=seed,
+            top_k=top_k,
+            min_p=min_p,
+            min_tokens=min_tokens,
+            response_format=response_format,
+            tools=tools,
+            tool_choice=tool_choice,
+        )
         response = self._post("/v1/chat/completions", payload)
         choices = response.get("choices", [])
         if not choices:

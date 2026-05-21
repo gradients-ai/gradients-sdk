@@ -205,7 +205,7 @@ The API key can also be passed directly to the client:
 client = GradientsClient(api_key="your-key")
 ```
 
-For local inference with `ModelSampler`, you may also need:
+For local vLLM inference and deployment, you may also need:
 
 | Variable | Description |
 |---|---|
@@ -219,6 +219,6 @@ For local inference with `ModelSampler`, you may also need:
 <img src="assets/section-what-to-read-next.svg" width="800" alt="What to read next">
 
 - **[Scheduler](scheduler.md)** — Multi-iteration training across multiple datasets.
-- **[Inference](inference.md)** — Test your fine-tuned model locally with ModelSampler.
-- **[Deployment](deployment.md)** — Deploy a trained LoRA adapter to RunPod with vLLM.
+- **[Inference](inference.md)** — Sample from local or cloud vLLM servers.
+- **[Deployment](deployment.md)** — Serve base models and LoRA adapters locally or on RunPod.
 - **[API Reference](api-reference.md)** — Complete class, method, and type reference.

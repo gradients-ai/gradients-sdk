@@ -74,11 +74,11 @@ Five training modes: `INSTRUCT`, `CHAT`, `DPO`, `GRPO`, `IMAGE`.
   </tr>
   <tr>
     <td><strong><a href="docs/inference.md">Inference</a></strong></td>
-    <td>Test locally or deploy with vLLM, TGI, or Transformers.</td>
+    <td>Sample from local or cloud vLLM servers.</td>
   </tr>
   <tr>
     <td><strong><a href="docs/deployment.md">Deployment</a></strong></td>
-    <td>Deploy a trained LoRA adapter to RunPod with vLLM.</td>
+    <td>Serve base models and LoRA adapters locally or on RunPod.</td>
   </tr>
   <tr>
     <td><strong><a href="docs/account.md">Account</a></strong></td>

@@ -3,7 +3,9 @@ from gradientsio.client import GradientsClient
 from gradientsio.client import Gradientsio
 from gradientsio.client import TaskType
 from gradientsio.deployment import DeploymentClient
+from gradientsio.deployment import LocalVLLMDeployment
 from gradientsio.deployment import RunPodDeployment
+from gradientsio.deployment import deploy_local_vllm
 from gradientsio.deployment import deploy_runpod
 from gradientsio.errors import APIError
 from gradientsio.errors import AuthenticationError
@@ -53,6 +55,7 @@ __all__ = [
     "Gradientsio",
     "ImageModelType",
     "ImageTextPair",
+    "LocalVLLMDeployment",
     "ModelSampler",
     "NetworkError",
     "NotFoundError",
@@ -69,6 +72,7 @@ __all__ = [
     "TaskType",
     "TrainingTask",
     "ValidationError",
+    "deploy_local_vllm",
     "deploy_runpod",
     "load_dataset_rows",
 ]

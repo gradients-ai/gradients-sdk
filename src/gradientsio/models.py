@@ -68,6 +68,7 @@ class Backend(str, Enum):
 
 
 class DeploymentProvider(str, Enum):
+    LOCAL = "local"
     RUNPOD = "runpod"
     CHUTES = "chutes"
     LIUM = "lium"

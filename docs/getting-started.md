@@ -109,10 +109,10 @@ result = task.wait()
 
 <img src="assets/section-test-the-result.svg" width="800" alt="Test the result">
 
-Compare the base model against your trained model on held-out data.
+Compare the base model against your trained model on held-out data. `ModelSampler` uses local vLLM by default, so the same inference path matches the server you can deploy later.
 
 > [!NOTE]
-> Local inference with `ModelSampler` requires a GPU.
+> Local vLLM inference with `ModelSampler` requires a GPU and `pip install vllm`.
 
 ```python
 from gradientsio import ModelSampler, load_dataset_rows
