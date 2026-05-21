@@ -90,6 +90,58 @@ class DeploymentStatus(str, Enum):
         return self == DeploymentStatus.RUNNING
 
 
+class LiumExecutor(SDKModel):
+    id: str
+    machine_name: str | None = None
+    price_per_gpu: float | None = None
+    executor_ip_address: str | None = None
+    gpu_count: int | None = None
+    available_gpu_count: int | None = None
+    specs: dict[str, Any] = Field(default_factory=dict)
+    min_gpu_count_for_rental: int | None = None
+    max_cuda_version: float | None = None
+
+
+class LiumTemplate(SDKModel):
+    id: str
+    name: str | None = None
+    docker_image: str | None = None
+    docker_image_tag: str | None = None
+    environment: dict[str, str] | None = None
+    internal_ports: list[int] | None = None
+    startup_commands: str | None = None
+    status: str | None = None
+
+
+class LiumPod(SDKModel):
+    id: str
+    executor_id: str | None = None
+    pod_name: str
+    status: str
+    ports_mapping: dict[str, Any] | str | None = None
+    ssh_connect_cmd: str | None = None
+    gpu_name: str | None = None
+    gpu_count: str | None = None
+    template: LiumTemplate | dict[str, Any] | None = None
+
+    @property
+    def normalized_status(self) -> DeploymentStatus:
+        status = str(self.status or "").upper()
+        if status == "RUNNING":
+            return DeploymentStatus.RUNNING
+        if status in {"STOPPED", "FAILED", "DELETING", "CREATION_FAILED"}:
+            return DeploymentStatus.TERMINATED
+        if status in {"PENDING", "START_PENDING", "STOP_PENDING"}:
+            return DeploymentStatus.PENDING
+        return DeploymentStatus.UNKNOWN
+
+
+class LiumSshKey(SDKModel):
+    id: str | None = None
+    name: str | None = None
+    public_key: str
+
+
 ACTIVE_TASK_STATUSES = {
     TaskStatus.PENDING,
     TaskStatus.PREPARING_DATA,
@@ -295,7 +347,7 @@ class DeploymentDetails(SDKModel):
     lora: str | None = None
     status: DeploymentStatus | str = DeploymentStatus.UNKNOWN
     server_url: str
-    pod: RunPodPod | None = None
+    pod: RunPodPod | LiumPod | None = None
 
     @property
     def is_running(self) -> bool:

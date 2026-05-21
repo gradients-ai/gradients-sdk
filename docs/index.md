@@ -48,7 +48,7 @@ Go deeper on training modes, data preparation, and configuration.
   </tr>
   <tr>
     <td><strong><a href="deployment.md">Deployment</a></strong></td>
-    <td>Serve base models and LoRA adapters locally or on RunPod.</td>
+    <td>Serve base models and LoRA adapters locally, on RunPod, or on Lium.</td>
   </tr>
   <tr>
     <td><strong><a href="account.md">Account</a></strong></td>

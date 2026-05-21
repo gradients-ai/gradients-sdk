@@ -198,6 +198,7 @@ The SDK automatically retries safe requests (GET, HEAD, OPTIONS) on transient fa
 | `GRADIENTS_API_KEY` | Yes | API key for all training and task operations |
 | `GRADIENTS_SESSION_TOKEN` | No | Session token — only needed for account balance and deposit operations |
 | `RUNPOD_API_KEY` | For RunPod deployment | RunPod API key used by `deploy_runpod()`; read from the environment only |
+| `LIUM_API_KEY` | For Lium deployment | Lium API key used by `deploy_lium()`; read from the environment only |
 
 The API key can also be passed directly to the client:
 
@@ -220,5 +221,5 @@ For local vLLM inference and deployment, you may also need:
 
 - **[Scheduler](scheduler.md)** — Multi-iteration training across multiple datasets.
 - **[Inference](inference.md)** — Sample from local or cloud vLLM servers.
-- **[Deployment](deployment.md)** — Serve base models and LoRA adapters locally or on RunPod.
+- **[Deployment](deployment.md)** — Serve base models and LoRA adapters locally, on RunPod, or on Lium.
 - **[API Reference](api-reference.md)** — Complete class, method, and type reference.

@@ -2,7 +2,7 @@
 
 <br>
 
-Inference in the SDK is vLLM-first. Local and RunPod deployments both expose an OpenAI-compatible server, so the same sampler can talk to either one.
+Inference in the SDK is vLLM-first. Local, RunPod, and Lium deployments expose an OpenAI-compatible server, so the same sampler can talk to any of them.
 
 Use `ModelSampler` when you want the SDK to start local vLLM for you. Use `RemoteVLLMSampler` when you already have a server URL.
 
@@ -15,7 +15,8 @@ For generation knobs such as `temperature`, `top_p`, `stop`, and penalties, see 
 `ModelSampler` starts local vLLM by default, sends prompts to it, and stops the server after generation unless you ask it to keep the server alive.
 
 > [!NOTE]
-> Local vLLM inference requires a CUDA GPU and `pip install vllm`.
+> Local vLLM inference requires a CUDA GPU and the GPU extra: `pip install "gradientsio[gpu]"`.
+> From a local checkout, use `pip install -e ".[gpu]"`.
 
 Generate with a base model:
 
@@ -164,6 +165,7 @@ Deploy a server first when you want to reuse it or share it with another app. Pr
 
 - **[Local vLLM Inference](inference/local-vllm.md)**
 - **[RunPod vLLM Inference](inference/runpod-vllm.md)**
+- **[Lium vLLM Inference](inference/lium-vllm.md)**
 
 **Local vLLM**:
 
@@ -182,6 +184,21 @@ deployment = gradientsio.deploy_local_vllm(
 import gradientsio
 
 deployment = gradientsio.deploy_runpod(
+    base_model="Qwen/Qwen2.5-3B",
+    lora="gradients-ai/your-model-abc123",
+)
+deployment.wait_ready(timeout=1800)
+
+sampler = deployment.sampler()
+answers = sampler.generate(["What is DNA?"], max_tokens=256)
+```
+
+**Lium vLLM**:
+
+```python
+import gradientsio
+
+deployment = gradientsio.deploy_lium(
     base_model="Qwen/Qwen2.5-3B",
     lora="gradients-ai/your-model-abc123",
 )
@@ -234,8 +251,9 @@ deployment = gradientsio.deploy_runpod(
 
 <img src="assets/section-what-to-read-next.svg" width="800" alt="What to read next">
 
-- **[Deployment](deployment.md)** — Overview of local and RunPod deployment.
+- **[Deployment](deployment.md)** — Overview of local, RunPod, and Lium deployment.
 - **[Inference Parameters](inference/parameters.md)** — OpenAI-compatible request options.
 - **[Local vLLM Inference](inference/local-vllm.md)** — Sample from a local vLLM server.
 - **[RunPod vLLM Inference](inference/runpod-vllm.md)** — Sample from a RunPod vLLM server.
+- **[Lium vLLM Inference](inference/lium-vllm.md)** — Sample from a Lium vLLM server.
 - **[Scheduler](scheduler.md)** — Multi-iteration training across multiple datasets.

@@ -2,11 +2,13 @@ from gradientsio.client import Datasets
 from gradientsio.client import GradientsClient
 from gradientsio.client import Gradientsio
 from gradientsio.client import TaskType
-from gradientsio.deployment import DeploymentClient
-from gradientsio.deployment import LocalVLLMDeployment
-from gradientsio.deployment import RunPodDeployment
-from gradientsio.deployment import deploy_local_vllm
-from gradientsio.deployment import deploy_runpod
+from gradientsio.deployments import DeploymentClient
+from gradientsio.deployments import LiumDeployment
+from gradientsio.deployments import LocalVLLMDeployment
+from gradientsio.deployments import RunPodDeployment
+from gradientsio.deployments import deploy_lium
+from gradientsio.deployments import deploy_local_vllm
+from gradientsio.deployments import deploy_runpod
 from gradientsio.errors import APIError
 from gradientsio.errors import AuthenticationError
 from gradientsio.errors import AuthorizationError
@@ -55,6 +57,7 @@ __all__ = [
     "Gradientsio",
     "ImageModelType",
     "ImageTextPair",
+    "LiumDeployment",
     "LocalVLLMDeployment",
     "ModelSampler",
     "NetworkError",
@@ -72,6 +75,7 @@ __all__ = [
     "TaskType",
     "TrainingTask",
     "ValidationError",
+    "deploy_lium",
     "deploy_local_vllm",
     "deploy_runpod",
     "load_dataset_rows",

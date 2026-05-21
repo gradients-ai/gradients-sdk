@@ -2,6 +2,18 @@
 
 Use local vLLM inference when you want the SDK to start an OpenAI-compatible server on your machine and sample through it.
 
+Install the GPU extra first:
+
+```bash
+pip install "gradientsio[gpu]"
+```
+
+From a local checkout:
+
+```bash
+pip install -e ".[gpu]"
+```
+
 ## Start Through ModelSampler
 
 `ModelSampler` uses local vLLM by default:
