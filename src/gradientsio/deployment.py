@@ -228,6 +228,7 @@ class DeploymentClient:
         gpu_memory_utilization: float | str | None = None,
         dtype: str | None = None,
         trust_remote_code: bool | None = None,
+        enforce_eager: bool = False,
         max_lora_rank: int | None = DEFAULT_VLLM_MAX_LORA_RANK,
         gpu_count: int | None = None,
         port: int = DEFAULT_RUNPOD_PORT,
@@ -263,6 +264,7 @@ class DeploymentClient:
             gpu_memory_utilization=gpu_memory_utilization,
             dtype=dtype,
             trust_remote_code=trust_remote_code,
+            enforce_eager=enforce_eager,
             max_lora_rank=max_lora_rank,
             gpu_count=resolved_gpu_count,
         )
@@ -346,6 +348,7 @@ class DeploymentClient:
         gpu_memory_utilization: float | str | None = None,
         dtype: str | None = None,
         trust_remote_code: bool | None = None,
+        enforce_eager: bool = False,
         max_lora_rank: int | None = DEFAULT_VLLM_MAX_LORA_RANK,
         gpu_count: int | None = None,
         inference_api_key: str | None = None,
@@ -365,6 +368,7 @@ class DeploymentClient:
             gpu_memory_utilization=gpu_memory_utilization,
             dtype=dtype,
             trust_remote_code=trust_remote_code,
+            enforce_eager=enforce_eager,
             max_lora_rank=max_lora_rank,
             gpu_count=resolved_gpu_count,
         )
@@ -646,6 +650,7 @@ def _build_vllm_start_cmd(
     gpu_memory_utilization: float | str | None = None,
     dtype: str | None = None,
     trust_remote_code: bool | None = None,
+    enforce_eager: bool = False,
     max_lora_rank: int | None = DEFAULT_VLLM_MAX_LORA_RANK,
     gpu_count: int = DEFAULT_RUNPOD_GPU_COUNT,
 ) -> list[str]:
@@ -678,6 +683,8 @@ def _build_vllm_start_cmd(
         command.extend(["--dtype", resolved_dtype])
     if resolved_trust_remote_code:
         command.append("--trust-remote-code")
+    if enforce_eager:
+        command.append("--enforce-eager")
     if gpu_count > 1:
         command.extend(["--tensor-parallel-size", str(gpu_count)])
     if lora:
