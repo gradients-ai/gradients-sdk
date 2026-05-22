@@ -53,7 +53,11 @@ print(answers[0])
 deployment.delete()
 ```
 
+
+Cloud deployments are idempotent by default. The SDK derives a deployment key from the model, adapter, vLLM image, provider settings, and startup options, then reuses a matching non-terminal deployment when one already exists.
+
 Each provider section below explains the setup and provider-specific options. Continue to the linked inference guide for provider-specific inference examples, existing-server usage, direct HTTP calls, and request parameters.
+
 
 <br>
 
@@ -127,15 +131,6 @@ Leave `lora` unset to serve a base model only:
 deployment = gradientsio.deploy_runpod(base_model="Qwen/Qwen2.5-3B")
 ```
 
-RunPod deployments are idempotent without a Gradients database or local cache. The SDK stores a deterministic key on the pod:
-
-- `GRADIENTS_DEPLOYMENT_KEY`
-- `GRADIENTS_BASE_MODEL`
-- `GRADIENTS_LORA`
-- `GRADIENTS_SDK_PROVIDER`
-
-Before creating a pod, `deploy_runpod()` lists your RunPod pods and reuses a non-terminated pod with the same deployment key. The key includes the base model, LoRA adapter, vLLM image, port, GPU count, GPU type preferences, and vLLM startup command.
-
 RunPod-only options include `template_id`, `gpu_type_ids`, `cloud_type`, `container_disk_in_gb`, `volume_in_gb`, and `interruptible`.
 
 For RunPod deployments, `deployment.delete()` deletes the RunPod pod.
@@ -182,8 +177,6 @@ Leave `lora` unset to serve a base model only:
 ```python
 deployment = gradientsio.deploy_lium(base_model="Qwen/Qwen2.5-3B")
 ```
-
-Lium deployments are idempotent without a Gradients database or local cache. The SDK uses a deterministic deployment key and pod/template name derived from the base model, LoRA adapter, vLLM image, port, GPU count, environment, and vLLM startup command. If it finds a non-terminal Lium pod with the same key or name, it reuses that pod.
 
 Lium-only options include `gpu_type` and `termination_hours`.
 
@@ -235,8 +228,6 @@ Leave `lora` unset to serve a base model only:
 deployment = gradientsio.deploy_targon(base_model="Qwen/Qwen2.5-3B")
 ```
 
-Targon deployments use a deterministic app name derived from the base model, LoRA adapter, Targon resource, port, environment, and vLLM startup command. If the SDK finds an existing Targon app with the same name, it reuses it.
-
 Targon-only options include `resource`, `project_name`, `startup_timeout`, and `requires_auth`.
 
 For Targon deployments, `deployment.delete()` deletes the Targon app.
@@ -283,8 +274,6 @@ Leave `lora` unset to serve a base model only:
 ```python
 deployment = gradientsio.deploy_basilica(base_model="Qwen/Qwen2.5-3B")
 ```
-
-Basilica deployments use a deterministic deployment name derived from the base model, LoRA adapter, vLLM image, port, GPU settings, environment, and vLLM startup command. If the SDK finds an existing non-terminal Basilica deployment with the same name or deployment key, it reuses it.
 
 Basilica-only options include `gpu_models`, `min_gpu_memory_gb`, `cpu`, `memory`, and `ttl_seconds`.
 
