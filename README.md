@@ -78,7 +78,7 @@ Five training modes: `INSTRUCT`, `CHAT`, `DPO`, `GRPO`, `IMAGE`.
   </tr>
   <tr>
     <td><strong><a href="docs/deployment.md">Deployment</a></strong></td>
-    <td>Serve base models and LoRA adapters locally, on RunPod, Lium, or Targon.</td>
+    <td>Serve base models and LoRA adapters locally, on RunPod, Lium, Targon, or Basilica.</td>
   </tr>
   <tr>
     <td><strong><a href="docs/account.md">Account</a></strong></td>

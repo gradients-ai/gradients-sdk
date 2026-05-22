@@ -2,11 +2,13 @@ from gradientsio.client import Datasets
 from gradientsio.client import GradientsClient
 from gradientsio.client import Gradientsio
 from gradientsio.client import TaskType
+from gradientsio.deployments import BasilicaDeployment
 from gradientsio.deployments import DeploymentClient
 from gradientsio.deployments import LiumDeployment
 from gradientsio.deployments import LocalVLLMDeployment
 from gradientsio.deployments import RunPodDeployment
 from gradientsio.deployments import TargonDeployment
+from gradientsio.deployments import deploy_basilica
 from gradientsio.deployments import deploy_lium
 from gradientsio.deployments import deploy_local_vllm
 from gradientsio.deployments import deploy_runpod
@@ -23,6 +25,7 @@ from gradientsio.errors import TaskFailed
 from gradientsio.errors import TaskTimeout
 from gradientsio.errors import ValidationError
 from gradientsio.models import Backend
+from gradientsio.models import BasilicaDeploymentModel
 from gradientsio.models import DeploymentDetails
 from gradientsio.models import DeploymentProvider
 from gradientsio.models import DeploymentStatus
@@ -46,6 +49,8 @@ __all__ = [
     "AuthenticationError",
     "AuthorizationError",
     "Backend",
+    "BasilicaDeployment",
+    "BasilicaDeploymentModel",
     "ConfigurationError",
     "Datasets",
     "DeploymentClient",
@@ -78,6 +83,7 @@ __all__ = [
     "TaskType",
     "TrainingTask",
     "ValidationError",
+    "deploy_basilica",
     "deploy_lium",
     "deploy_local_vllm",
     "deploy_runpod",

@@ -2,7 +2,7 @@
 
 <br>
 
-Inference in the SDK is vLLM-first. Local, RunPod, Lium, and Targon deployments expose an OpenAI-compatible server, so the same sampler can talk to any of them.
+Inference in the SDK is vLLM-first. Local, RunPod, Lium, Targon, and Basilica deployments expose an OpenAI-compatible server, so the same sampler can talk to any of them.
 
 Use `ModelSampler` when you want the SDK to start local vLLM for you. Use `RemoteVLLMSampler` when you already have a server URL.
 
@@ -131,29 +131,64 @@ For vLLM, `max_new_tokens` maps to `max_tokens`. If outputs are cut short, incre
 
 Gradients training produces LoRA adapters — small weight files that modify the base model's behavior without replacing it. The vLLM path serves the base model and applies the adapter at inference time.
 
-If you need more control, load the model and adapter manually:
+For most inference and deployment flows, use vLLM through `ModelSampler`, `deploy_local_vllm()`, or one of the cloud deployment helpers. If you need in-process model objects instead of a server, use the Transformers backend below.
+
+## Transformers Backend
+
+The SDK also includes a Transformers backend for local, in-process inference. Use this when you need direct access to the tokenizer/model objects, want to merge a LoRA adapter into a loaded base model, or are debugging generation without starting a vLLM server.
+
+Install the GPU extra first:
+
+```bash
+pip install "gradientsio[gpu]"
+```
+
+Use Transformers by setting `backend="transformers"`:
+
+```python
+from gradientsio import GenerationConfig, ModelSampler
+
+sampler = ModelSampler(backend="transformers")
+
+answers = sampler.generate(
+    "Qwen/Qwen2.5-3B",
+    ["What is DNA?\n\nAnswer:"],
+    config=GenerationConfig(
+        max_new_tokens=128,
+        do_sample=False,
+        repetition_penalty=1.12,
+        num_beams=4,
+    ),
+)
+print(answers[0])
+```
+
+For a trained LoRA adapter:
+
+```python
+answers = sampler.generate_with_adapter(
+    "gradients-ai/your-trained-adapter",
+    ["What is DNA?\n\nAnswer:"],
+    base_model_repo="Qwen/Qwen2.5-3B",
+    config=GenerationConfig(max_new_tokens=128),
+)
+```
+
+If you want to load once and run many prompt batches:
 
 ```python
 tokenizer, model = sampler.load_model(
-    "your-trained-model-repo",
+    "gradients-ai/your-trained-adapter",
     base_model_repo="Qwen/Qwen2.5-3B",
 )
 
-# run multiple prompts without reloading
-answers = sampler.generate_with_model(tokenizer, model, prompts)
-more_answers = sampler.generate_with_model(tokenizer, model, more_prompts)
+answers = sampler.generate_with_model(tokenizer, model, ["What is DNA?\n\nAnswer:"])
+more_answers = sampler.generate_with_model(tokenizer, model, ["Explain LoRA briefly.\n\nAnswer:"])
 
-# free GPU memory when done
 ModelSampler.release_model(model)
 ```
 
-This Transformers fallback avoids vLLM if you specifically need in-process model objects.
-
-Use it by setting `backend="transformers"`:
-
-```python
-sampler = ModelSampler(backend="transformers")
-```
+Unlike the vLLM path, the Transformers backend does not accept OpenAI-compatible request parameters such as `temperature` or `top_p` directly. Pass a `GenerationConfig` instead.
 
 <br>
 
@@ -167,6 +202,7 @@ Deploy a server first when you want to reuse it or share it with another app. Pr
 - **[RunPod vLLM Inference](inference/runpod-vllm.md)**
 - **[Lium vLLM Inference](inference/lium-vllm.md)**
 - **[Targon vLLM Inference](inference/targon-vllm.md)**
+- **[Basilica vLLM Inference](inference/basilica-vllm.md)**
 
 **Local vLLM**:
 

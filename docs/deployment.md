@@ -4,7 +4,7 @@
 
 Gradients publishes trained text models as standard Hugging Face LoRA adapters. The deployment helpers provision a serving endpoint for a base model plus adapter and return a handle you can use from the SDK or from any HTTP client.
 
-Currently we can deploy a local vLLM server, a RunPod vLLM server, a Lium vLLM server, or a Targon vLLM server.
+Every deployment exposes an OpenAI-compatible vLLM server. That means the same `deployment.sampler()` call works whether the server is local, on RunPod, on Lium, on Targon, or on Basilica.
 
 <br>
 
@@ -12,14 +12,15 @@ Currently we can deploy a local vLLM server, a RunPod vLLM server, a Lium vLLM s
 
 ## Options
 
-| Option | SDK call |
-|---|---|
-| Local vLLM | `gradientsio.deploy_local_vllm(...)` |
-| RunPod vLLM | `gradientsio.deploy_runpod(...)` |
-| Lium vLLM | `gradientsio.deploy_lium(...)` |
-| Targon vLLM | `gradientsio.deploy_targon(...)` |
+| Option | SDK call | Inference guide |
+|---|---|---|
+| [Local vLLM](#serve-locally) | `gradientsio.deploy_local_vllm(...)` | [Local vLLM inference](inference/local-vllm.md) |
+| [RunPod](#serve-on-runpod) | `gradientsio.deploy_runpod(...)` | [RunPod vLLM inference](inference/runpod-vllm.md) |
+| [Lium](#serve-on-lium) | `gradientsio.deploy_lium(...)` | [Lium vLLM inference](inference/lium-vllm.md) |
+| [Targon](#serve-on-targon) | `gradientsio.deploy_targon(...)` | [Targon vLLM inference](inference/targon-vllm.md) |
+| [Basilica](#serve-on-basilica) | `gradientsio.deploy_basilica(...)` | [Basilica vLLM inference](inference/basilica-vllm.md) |
 
-Both options return a deployment handle with:
+All options return a deployment handle with:
 
 - `deployment.server_url`
 - `deployment.sampler()`
@@ -29,63 +30,44 @@ Both options return a deployment handle with:
 
 ---
 
-## Setup
+## Quick E2E Flow
 
-Install the SDK:
+The deployment flow is the same across providers: deploy, wait until vLLM is ready, sample, then delete when you are done.
 
-```bash
-pip install gradientsio
+```python
+import gradientsio
+
+deployment = gradientsio.deploy_basilica(
+    base_model="Qwen/Qwen2.5-3B",
+    lora="gradients-ai/your-trained-adapter",
+)
+
+sampler = deployment.sampler()
+answers = sampler.generate(
+    ["What is DNA?"],
+    max_tokens=128,
+    temperature=0.2,
+)
+print(answers[0])
+
+deployment.delete()
 ```
 
-For local vLLM, install the GPU extra in the same environment:
-
-```bash
-pip install "gradientsio[gpu]"
-```
-
-From a local checkout:
-
-```bash
-pip install -e ".[gpu]"
-```
-
-For RunPod, set your RunPod API key before calling the SDK:
-
-```bash
-export RUNPOD_API_KEY="your-runpod-api-key"
-```
-
-The RunPod API key is read only from `RUNPOD_API_KEY`. It is not accepted as a Python argument.
-
-For Lium, set your Lium API key before calling the SDK:
-
-```bash
-export LIUM_API_KEY="your-lium-api-key"
-```
-
-The Lium API key is read only from `LIUM_API_KEY`. It is not accepted as a Python argument.
-Lium's pod API requires an SSH public key. The SDK uses the first registered Lium SSH key. If none exists, it uses `~/.ssh/id_ed25519.pub` or `~/.ssh/id_rsa.pub`; if no local key exists, it creates `~/.ssh/id_ed25519`, registers the public key with Lium.
-
-For Targon, install the Targon extra and set your Targon API key before calling the SDK:
-
-```bash
-pip install "gradientsio[targon]"
-export TARGON_API_KEY="your-targon-api-key"
-```
-
-The SDK reads `TARGON_API_KEY` for app reuse and deletion.
-
-For private or gated Hugging Face repos, set a token or pass `hf_token`:
-
-```bash
-export HF_TOKEN="hf_..."
-```
+Each provider section below explains the setup and provider-specific options. Continue to the linked inference guide for provider-specific inference examples, existing-server usage, direct HTTP calls, and request parameters.
 
 <br>
 
 ---
 
 ## Serve Locally
+
+Local vLLM starts a server on your own GPU machine. Use this when you want direct control over the environment, fast iteration, or a local server that other code can call.
+
+Install the GPU extra first:
+
+```bash
+pip install "gradientsio[gpu]"
+```
 
 Deploy locally:
 
@@ -104,11 +86,23 @@ The default local server URL is `http://127.0.0.1:8000`. This binds to `127.0.0.
 
 For local deployments, `deployment.delete()` stops the vLLM process started by the SDK. If the SDK reused an existing server, it leaves that server running.
 
+Continue with [Local vLLM inference](inference/local-vllm.md).
+
 <br>
 
 ---
 
 ## Serve On RunPod
+
+[RunPod](https://www.runpod.io/) provides cloud GPU pods. The Gradients SDK creates a vLLM pod, waits for the OpenAI-compatible server to respond, and returns a deployment handle.
+
+Set your RunPod API key before deploying:
+
+```bash
+export RUNPOD_API_KEY="your-runpod-api-key"
+```
+
+The RunPod API key is read only from `RUNPOD_API_KEY`. It is not accepted as a Python argument.
 
 Deploy on RunPod:
 
@@ -130,7 +124,7 @@ deployment.wait_ready(timeout=1800)
 Leave `lora` unset to serve a base model only:
 
 ```python
-deployment = gradientsio.deploy_local_vllm(base_model="Qwen/Qwen2.5-3B")
+deployment = gradientsio.deploy_runpod(base_model="Qwen/Qwen2.5-3B")
 ```
 
 RunPod deployments are idempotent without a Gradients database or local cache. The SDK stores a deterministic key on the pod:
@@ -142,13 +136,29 @@ RunPod deployments are idempotent without a Gradients database or local cache. T
 
 Before creating a pod, `deploy_runpod()` lists your RunPod pods and reuses a non-terminated pod with the same deployment key. The key includes the base model, LoRA adapter, vLLM image, port, GPU count, GPU type preferences, and vLLM startup command.
 
+RunPod-only options include `template_id`, `gpu_type_ids`, `cloud_type`, `container_disk_in_gb`, `volume_in_gb`, and `interruptible`.
+
 For RunPod deployments, `deployment.delete()` deletes the RunPod pod.
+
+Continue with [RunPod vLLM inference](inference/runpod-vllm.md).
 
 <br>
 
 ---
 
 ## Serve On Lium
+
+[Lium](https://lium.io/) provides GPU pods from a marketplace of available machines. The Gradients SDK creates or reuses a vLLM template, rents a compatible executor, and exposes the pod as an OpenAI-compatible server.
+
+Set your Lium API key before deploying:
+
+```bash
+export LIUM_API_KEY="your-lium-api-key"
+```
+
+The Lium API key is read only from `LIUM_API_KEY`. It is not accepted as a Python argument.
+
+Lium's pod API requires an SSH public key. The SDK uses the first registered Lium SSH key. If none exists, it uses `~/.ssh/id_ed25519.pub` or `~/.ssh/id_rsa.pub`; if no local key exists, it creates `~/.ssh/id_ed25519`, registers the public key with Lium.
 
 Deploy on Lium:
 
@@ -175,16 +185,30 @@ deployment = gradientsio.deploy_lium(base_model="Qwen/Qwen2.5-3B")
 
 Lium deployments are idempotent without a Gradients database or local cache. The SDK uses a deterministic deployment key and pod/template name derived from the base model, LoRA adapter, vLLM image, port, GPU count, environment, and vLLM startup command. If it finds a non-terminal Lium pod with the same key or name, it reuses that pod.
 
+Lium-only options include `gpu_type` and `termination_hours`.
+
 For Lium deployments, `deployment.delete()` deletes the Lium pod.
 
 > [!WARNING]
 > Do not put long-lived secrets on non-CVM Lium pods. GPU providers may be able to inspect container files, environment variables, and process memory on non-CVM machines. Prefer public models/adapters, short-lived tokens, or CVM nodes for sensitive workloads.
+
+Continue with [Lium vLLM inference](inference/lium-vllm.md).
 
 <br>
 
 ---
 
 ## Serve On Targon
+
+[Targon](https://www.targon.com/) provides serverless GPU web endpoints. The Gradients SDK builds a vLLM workload around your model and returns the endpoint URL once the server is reachable.
+
+Set your Targon API key before deploying:
+
+```bash
+export TARGON_API_KEY="your-targon-api-key"
+```
+
+The SDK reads `TARGON_API_KEY` for app reuse and deletion.
 
 Deploy on Targon:
 
@@ -213,7 +237,60 @@ deployment = gradientsio.deploy_targon(base_model="Qwen/Qwen2.5-3B")
 
 Targon deployments use a deterministic app name derived from the base model, LoRA adapter, Targon resource, port, environment, and vLLM startup command. If the SDK finds an existing Targon app with the same name, it reuses it.
 
+Targon-only options include `resource`, `project_name`, `startup_timeout`, and `requires_auth`.
+
 For Targon deployments, `deployment.delete()` deletes the Targon app.
+
+Continue with [Targon vLLM inference](inference/targon-vllm.md).
+
+<br>
+
+---
+
+## Serve On Basilica
+
+[Basilica](https://www.basilica.ai/) provides developer-native compute for container deployments. The Gradients SDK uses the Basilica deployments API directly, requests A100 GPUs by default, and waits for vLLM to become reachable.
+
+Set your Basilica API key before deploying:
+
+```bash
+export BASILICA_API_KEY="your-basilica-api-key"
+```
+
+The Basilica API key is read only from `BASILICA_API_KEY`. It is not accepted as a Python argument.
+
+Deploy on Basilica:
+
+```python
+deployment = gradientsio.deploy_basilica(
+    base_model="Qwen/Qwen2.5-3B",
+    lora="gradients-ai/your-trained-adapter",
+)
+
+print(deployment.server_url)
+```
+
+Basilica deployments use the Basilica deployments API directly. The SDK creates a `vllm/vllm-openai:latest` deployment, requests A100 GPUs by default, waits for the deployment to become healthy, then checks `/v1/models` for a healthy OpenAI-compatible response.
+
+By default, Basilica deployments request `gpu_models=["A100"]` and `min_gpu_memory_gb=80`. Pass `gpu_models=[...]` or `min_gpu_memory_gb=...` to override this.
+
+```python
+deployment.wait_ready(timeout=1800)
+```
+
+Leave `lora` unset to serve a base model only:
+
+```python
+deployment = gradientsio.deploy_basilica(base_model="Qwen/Qwen2.5-3B")
+```
+
+Basilica deployments use a deterministic deployment name derived from the base model, LoRA adapter, vLLM image, port, GPU settings, environment, and vLLM startup command. If the SDK finds an existing non-terminal Basilica deployment with the same name or deployment key, it reuses it.
+
+Basilica-only options include `gpu_models`, `min_gpu_memory_gb`, `cpu`, `memory`, and `ttl_seconds`.
+
+For Basilica deployments, `deployment.delete()` deletes the Basilica deployment.
+
+Continue with [Basilica vLLM inference](inference/basilica-vllm.md).
 
 <br>
 
@@ -221,7 +298,7 @@ For Targon deployments, `deployment.delete()` deletes the Targon app.
 
 ## Configure vLLM
 
-The local, RunPod, Lium, and Targon helpers accept the same core vLLM settings:
+The local, RunPod, Lium, Targon, and Basilica helpers accept the same core vLLM settings:
 
 ```python
 deployment = gradientsio.deploy_local_vllm(
@@ -255,25 +332,6 @@ Common options:
 | `enforce_eager` | `False` | Adds vLLM `--enforce-eager` |
 | `max_lora_rank` | `256` | vLLM `--max-lora-rank` for LoRA adapters |
 
-RunPod-only options include `template_id`, `gpu_type_ids`, `cloud_type`, `container_disk_in_gb`, `volume_in_gb`, and `interruptible`.
-
-Lium-only options include `gpu_type` and `termination_hours`.
-
-For local serving, the SDK starts vLLM with the same OpenAI-compatible server used by vLLM directly:
-
-```bash
-python -m vllm.entrypoints.openai.api_server \
-  --host 127.0.0.1 \
-  --port 8000 \
-  --model Qwen/Qwen2.5-7B-Instruct \
-  --served-model-name Qwen-Qwen2.5-7B-Instruct \
-  --enable-lora \
-  --lora-modules your-adapter=gradients-ai/your-trained-adapter \
-  --max-lora-rank 256 \
-  --enforce-eager \
-  --tensor-parallel-size 1
-```
-
 The SDK adds flags only when they are needed or provided. For example, `max_model_len=8192` becomes `--max-model-len 8192`, `gpu_memory_utilization=0.90` becomes `--gpu-memory-utilization 0.90`, `dtype="bfloat16"` becomes `--dtype bfloat16`, `trust_remote_code=True` adds `--trust-remote-code`, and `enforce_eager=True` adds `--enforce-eager`.
 
 For larger models, start with explicit memory settings:
@@ -306,15 +364,42 @@ If vLLM fails with a KV cache or CUDA out-of-memory error:
 
 ---
 
-## Sample From Any Deployment
+## Full Inference Example
+
+This example uses Basilica, but the sampler calls are the same for every provider.
 
 ```python
-sampler = deployment.sampler()
-answers = sampler.generate(["What is DNA?"], max_tokens=128)
-print(answers[0])
+import gradientsio
+
+deployment = gradientsio.deploy_basilica(
+    base_model="Qwen/Qwen2.5-3B",
+    lora="gradients-ai/your-trained-adapter",
+    max_model_len=4096,
+    gpu_memory_utilization=0.90,
+    dtype="bfloat16",
+)
+
+try:
+    deployment.wait_ready(timeout=1800, poll_interval=20)
+
+    sampler = deployment.sampler(timeout=120)
+    answers = sampler.generate(
+        [
+            "Explain what a LoRA adapter is in one paragraph.\n\nAnswer:",
+            "What is DNA?\n\nAnswer:",
+        ],
+        max_tokens=160,
+        temperature=0.2,
+        top_p=0.95,
+    )
+
+    for answer in answers:
+        print(answer)
+finally:
+    deployment.delete()
 ```
 
-Or call the server directly:
+You can also call the server directly if you do not want to use the SDK sampler:
 
 ```bash
 curl "$SERVER_URL/v1/completions" \
@@ -326,6 +411,8 @@ curl "$SERVER_URL/v1/completions" \
   }'
 ```
 
+For all generation parameters, see [Inference Parameters](inference/parameters.md).
+
 <br>
 
 ---
@@ -333,3 +420,4 @@ curl "$SERVER_URL/v1/completions" \
 ## What To Read Next
 
 - **[Inference](inference.md)** — Sampling with local or cloud OpenAI-compatible servers.
+- **[Inference Parameters](inference/parameters.md)** — Request parameters such as `temperature`, `top_p`, `stop`, and penalties.

@@ -1,23 +1,23 @@
-# Targon vLLM Inference
+# Basilica vLLM Inference
 
-Targon inference uses the same OpenAI-compatible sampler as local, RunPod, and Lium vLLM. The server URL comes from a Targon Serverless web endpoint.
+Basilica inference uses the same OpenAI-compatible sampler as local, RunPod, Lium, and Targon vLLM. The server URL comes from a Basilica deployment.
 
 ## Setup
 
-Set your Targon API key before deploying:
+Set your Basilica API key before deploying:
 
 ```bash
-export TARGON_API_KEY="your-targon-api-key"
+export BASILICA_API_KEY="your-basilica-api-key"
 ```
 
-Targon also supports `targon setup` for CLI/SDK credentials. The Gradients SDK reads `TARGON_API_KEY` for app reuse and deletion.
+The Gradients SDK reads `BASILICA_API_KEY` for deployment creation, reuse, logs, and deletion.
 
 ## Deploy and Sample
 
 ```python
 import gradientsio
 
-deployment = gradientsio.deploy_targon(
+deployment = gradientsio.deploy_basilica(
     base_model="Qwen/Qwen2.5-3B",
     lora="gradients-ai/your-trained-adapter",
 )
@@ -29,7 +29,7 @@ answers = sampler.generate(["What is DNA?"], max_tokens=128)
 print(answers[0])
 ```
 
-By default, Targon resources are tried in this order: `h100-small`, `h200-small`, `b200-small`, then `rtx4090-small`. Pass `resource="..."` to force a specific resource.
+By default, Basilica deployments request A100 GPUs with at least 80 GB of GPU memory. Pass `gpu_models=[...]` or `min_gpu_memory_gb=...` to override this.
 
 Tune the OpenAI-compatible request:
 
@@ -43,7 +43,7 @@ answers = sampler.generate(
 )
 ```
 
-## Existing Targon Server
+## Existing Basilica Server
 
 If you already have a server URL:
 
@@ -51,7 +51,7 @@ If you already have a server URL:
 from gradientsio import RemoteVLLMSampler
 
 sampler = RemoteVLLMSampler(
-    base_url="https://your-targon-endpoint",
+    base_url="https://your-basilica-deployment-url",
     model="gradients-gradients-ai-your-trained-adapter",
 )
 

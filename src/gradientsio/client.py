@@ -13,6 +13,7 @@ from gradientsio.account import AccountClient
 from gradientsio.constants import GRADIENTS_API_BASE_URL
 from gradientsio.constants import GRADIENTS_API_KEY_ENV
 from gradientsio.constants import GRADIENTS_SESSION_TOKEN_ENV
+from gradientsio.deployments import BasilicaDeployment
 from gradientsio.deployments import DeploymentClient
 from gradientsio.deployments import LiumDeployment
 from gradientsio.deployments import LocalVLLMDeployment
@@ -99,6 +100,9 @@ class GradientsClient:
 
     def deploy_targon(self, **kwargs: Any) -> TargonDeployment:
         return self.deployments.deploy_targon(**kwargs)
+
+    def deploy_basilica(self, **kwargs: Any) -> BasilicaDeployment:
+        return self.deployments.deploy_basilica(**kwargs)
 
     def deploy_local_vllm(self, **kwargs: Any) -> LocalVLLMDeployment:
         return self.deployments.deploy_local_vllm(**kwargs)

@@ -5,12 +5,16 @@ from typing import Any
 
 import httpx
 
+from gradientsio.constants import BASILICA_API_KEY_ENV
+from gradientsio.constants import BASILICA_BASE_URL
 from gradientsio.constants import LIUM_API_KEY_ENV
 from gradientsio.constants import LIUM_BASE_URL
 from gradientsio.constants import RUNPOD_API_KEY_ENV
 from gradientsio.constants import RUNPOD_BASE_URL
 from gradientsio.constants import TARGON_API_KEY_ENV
 from gradientsio.constants import TARGON_BASE_URL
+from gradientsio.deployments.basilica import BasilicaDeployment
+from gradientsio.deployments.basilica import BasilicaDeploymentMixin
 from gradientsio.deployments.lium import LiumDeployment
 from gradientsio.deployments.lium import LiumDeploymentMixin
 from gradientsio.deployments.local import LocalDeploymentMixin
@@ -21,22 +25,41 @@ from gradientsio.deployments.targon import TargonDeployment
 from gradientsio.deployments.targon import TargonDeploymentMixin
 
 
-class DeploymentClient(RunPodDeploymentMixin, LiumDeploymentMixin, TargonDeploymentMixin, LocalDeploymentMixin):
+_CLIENT_KWARGS = (
+    "runpod_base_url",
+    "lium_base_url",
+    "targon_base_url",
+    "basilica_base_url",
+    "timeout",
+    "http_client",
+)
+
+
+class DeploymentClient(
+    RunPodDeploymentMixin,
+    LiumDeploymentMixin,
+    TargonDeploymentMixin,
+    BasilicaDeploymentMixin,
+    LocalDeploymentMixin,
+):
     def __init__(
         self,
         *,
         runpod_base_url: str = RUNPOD_BASE_URL,
         lium_base_url: str = LIUM_BASE_URL,
         targon_base_url: str = TARGON_BASE_URL,
+        basilica_base_url: str = BASILICA_BASE_URL,
         timeout: float | httpx.Timeout = 60.0,
         http_client: httpx.Client | None = None,
     ) -> None:
         self.runpod_api_key = os.getenv(RUNPOD_API_KEY_ENV)
         self.lium_api_key = os.getenv(LIUM_API_KEY_ENV)
         self.targon_api_key = os.getenv(TARGON_API_KEY_ENV)
+        self.basilica_api_key = os.getenv(BASILICA_API_KEY_ENV)
         self.runpod_base_url = runpod_base_url.rstrip("/")
         self.lium_base_url = lium_base_url.rstrip("/")
         self.targon_base_url = targon_base_url.rstrip("/")
+        self.basilica_base_url = basilica_base_url.rstrip("/")
         self._owns_client = http_client is None
         self._client = http_client or httpx.Client(timeout=timeout)
 
@@ -48,7 +71,7 @@ class DeploymentClient(RunPodDeploymentMixin, LiumDeploymentMixin, TargonDeploym
 def deploy_runpod(**kwargs: Any) -> RunPodDeployment:
     client_kwargs = {
         key: kwargs.pop(key)
-        for key in ("runpod_base_url", "lium_base_url", "targon_base_url", "timeout", "http_client")
+        for key in _CLIENT_KWARGS
         if key in kwargs
     }
     client = DeploymentClient(**client_kwargs)
@@ -58,7 +81,7 @@ def deploy_runpod(**kwargs: Any) -> RunPodDeployment:
 def deploy_lium(**kwargs: Any) -> LiumDeployment:
     client_kwargs = {
         key: kwargs.pop(key)
-        for key in ("runpod_base_url", "lium_base_url", "targon_base_url", "timeout", "http_client")
+        for key in _CLIENT_KWARGS
         if key in kwargs
     }
     client = DeploymentClient(**client_kwargs)
@@ -68,17 +91,27 @@ def deploy_lium(**kwargs: Any) -> LiumDeployment:
 def deploy_targon(**kwargs: Any) -> TargonDeployment:
     client_kwargs = {
         key: kwargs.pop(key)
-        for key in ("runpod_base_url", "lium_base_url", "targon_base_url", "timeout", "http_client")
+        for key in _CLIENT_KWARGS
         if key in kwargs
     }
     client = DeploymentClient(**client_kwargs)
     return client.deploy_targon(**kwargs)
 
 
+def deploy_basilica(**kwargs: Any) -> BasilicaDeployment:
+    client_kwargs = {
+        key: kwargs.pop(key)
+        for key in _CLIENT_KWARGS
+        if key in kwargs
+    }
+    client = DeploymentClient(**client_kwargs)
+    return client.deploy_basilica(**kwargs)
+
+
 def deploy_local_vllm(**kwargs: Any) -> LocalVLLMDeployment:
     client_kwargs = {
         key: kwargs.pop(key)
-        for key in ("runpod_base_url", "lium_base_url", "targon_base_url", "timeout", "http_client")
+        for key in _CLIENT_KWARGS
         if key in kwargs
     }
     client = DeploymentClient(**client_kwargs)

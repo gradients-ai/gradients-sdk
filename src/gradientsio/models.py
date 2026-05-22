@@ -73,6 +73,7 @@ class DeploymentProvider(str, Enum):
     CHUTES = "chutes"
     LIUM = "lium"
     TARGON = "targon"
+    BASILICA = "basilica"
 
 
 class DeploymentStatus(str, Enum):
@@ -171,6 +172,29 @@ class TargonApp(SDKModel):
         if status in {"deleted", "failed", "error", "terminated", "stopped", "crashloopbackoff"}:
             return DeploymentStatus.TERMINATED
         if status in {"pending", "building", "deploying", "starting", "initializing"}:
+            return DeploymentStatus.PENDING
+        return DeploymentStatus.UNKNOWN
+
+
+class BasilicaDeploymentModel(SDKModel):
+    instance_name: str
+    state: str | None = None
+    url: str | None = None
+    message: str | None = None
+    phase: str | None = None
+    env: dict[str, Any] = Field(default_factory=dict)
+    replicas: dict[str, Any] | None = None
+    progress: dict[str, Any] | None = None
+    pods: list[dict[str, Any]] | None = None
+
+    @property
+    def normalized_status(self) -> DeploymentStatus:
+        status = str(self.state or self.phase or "").lower()
+        if status in {"active", "running", "ready", "healthy", "deployed"}:
+            return DeploymentStatus.RUNNING
+        if status in {"failed", "stopped", "deleted", "terminated", "error"}:
+            return DeploymentStatus.TERMINATED
+        if status in {"provisioning", "pending", "creating", "starting", "restarting"}:
             return DeploymentStatus.PENDING
         return DeploymentStatus.UNKNOWN
 
@@ -380,7 +404,7 @@ class DeploymentDetails(SDKModel):
     lora: str | None = None
     status: DeploymentStatus | str = DeploymentStatus.UNKNOWN
     server_url: str
-    pod: RunPodPod | LiumPod | TargonApp | None = None
+    pod: RunPodPod | LiumPod | TargonApp | BasilicaDeploymentModel | None = None
 
     @property
     def is_running(self) -> bool:

@@ -200,6 +200,7 @@ The SDK automatically retries safe requests (GET, HEAD, OPTIONS) on transient fa
 | `RUNPOD_API_KEY` | For RunPod deployment | RunPod API key used by `deploy_runpod()`; read from the environment only |
 | `LIUM_API_KEY` | For Lium deployment | Lium API key used by `deploy_lium()`; read from the environment only |
 | `TARGON_API_KEY` | For Targon deployment | Targon API key used by `deploy_targon()`; read from the environment for app reuse and deletion |
+| `BASILICA_API_KEY` | For Basilica deployment | Basilica API key used by `deploy_basilica()`; read from the environment only |
 
 The API key can also be passed directly to the client:
 

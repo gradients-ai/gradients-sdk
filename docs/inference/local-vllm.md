@@ -54,6 +54,36 @@ Keep the server alive across calls:
 sampler = ModelSampler(keep_server_alive=True)
 ```
 
+## Transformers Backend
+
+If you specifically need in-process model objects instead of a vLLM server, use the Transformers backend:
+
+```python
+from gradientsio import GenerationConfig, ModelSampler
+
+sampler = ModelSampler(backend="transformers")
+
+answers = sampler.generate(
+    "Qwen/Qwen2.5-3B",
+    ["What is DNA?\n\nAnswer:"],
+    config=GenerationConfig(max_new_tokens=128),
+)
+print(answers[0])
+```
+
+For a trained LoRA adapter:
+
+```python
+answers = sampler.generate_with_adapter(
+    "gradients-ai/your-trained-adapter",
+    ["What is DNA?\n\nAnswer:"],
+    base_model_repo="Qwen/Qwen2.5-3B",
+    config=GenerationConfig(max_new_tokens=128),
+)
+```
+
+The Transformers backend uses `GenerationConfig` for generation settings. OpenAI-compatible parameters such as `temperature` and `top_p` are for the vLLM server path.
+
 ## Start a Server First
 
 ```python
