@@ -4,7 +4,7 @@
 
 Gradients publishes trained text models as standard Hugging Face LoRA adapters. The deployment helpers provision a serving endpoint for a base model plus adapter and return a handle you can use from the SDK or from any HTTP client.
 
-Currently we can deploy a local vLLM server, a RunPod vLLM server, or a Lium vLLM server.
+Currently we can deploy a local vLLM server, a RunPod vLLM server, a Lium vLLM server, or a Targon vLLM server.
 
 <br>
 
@@ -17,6 +17,7 @@ Currently we can deploy a local vLLM server, a RunPod vLLM server, or a Lium vLL
 | Local vLLM | `gradientsio.deploy_local_vllm(...)` |
 | RunPod vLLM | `gradientsio.deploy_runpod(...)` |
 | Lium vLLM | `gradientsio.deploy_lium(...)` |
+| Targon vLLM | `gradientsio.deploy_targon(...)` |
 
 Both options return a deployment handle with:
 
@@ -64,6 +65,15 @@ export LIUM_API_KEY="your-lium-api-key"
 
 The Lium API key is read only from `LIUM_API_KEY`. It is not accepted as a Python argument.
 Lium's pod API requires an SSH public key. The SDK uses the first registered Lium SSH key. If none exists, it uses `~/.ssh/id_ed25519.pub` or `~/.ssh/id_rsa.pub`; if no local key exists, it creates `~/.ssh/id_ed25519`, registers the public key with Lium.
+
+For Targon, install the Targon extra and set your Targon API key before calling the SDK:
+
+```bash
+pip install "gradientsio[targon]"
+export TARGON_API_KEY="your-targon-api-key"
+```
+
+The SDK reads `TARGON_API_KEY` for app reuse and deletion.
 
 For private or gated Hugging Face repos, set a token or pass `hf_token`:
 
@@ -174,9 +184,44 @@ For Lium deployments, `deployment.delete()` deletes the Lium pod.
 
 ---
 
+## Serve On Targon
+
+Deploy on Targon:
+
+```python
+deployment = gradientsio.deploy_targon(
+    base_model="Qwen/Qwen2.5-3B",
+    lora="gradients-ai/your-trained-adapter",
+)
+
+print(deployment.server_url)
+```
+
+Targon deployments use Targon Serverless web endpoints. The SDK builds a Targon app around `vllm serve`, deploys it with the requested GPU resource, then checks `/v1/models` for a healthy OpenAI-compatible response.
+
+By default, Targon resources are tried in this order: `h100-small`, `h200-small`, `b200-small`, then `rtx4090-small`. Pass `resource="..."` to force a specific resource.
+
+```python
+deployment.wait_ready(timeout=1800)
+```
+
+Leave `lora` unset to serve a base model only:
+
+```python
+deployment = gradientsio.deploy_targon(base_model="Qwen/Qwen2.5-3B")
+```
+
+Targon deployments use a deterministic app name derived from the base model, LoRA adapter, Targon resource, port, environment, and vLLM startup command. If the SDK finds an existing Targon app with the same name, it reuses it.
+
+For Targon deployments, `deployment.delete()` deletes the Targon app.
+
+<br>
+
+---
+
 ## Configure vLLM
 
-The local, RunPod, and Lium helpers accept the same core vLLM settings:
+The local, RunPod, Lium, and Targon helpers accept the same core vLLM settings:
 
 ```python
 deployment = gradientsio.deploy_local_vllm(

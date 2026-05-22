@@ -2,7 +2,7 @@
 
 <br>
 
-Inference in the SDK is vLLM-first. Local, RunPod, and Lium deployments expose an OpenAI-compatible server, so the same sampler can talk to any of them.
+Inference in the SDK is vLLM-first. Local, RunPod, Lium, and Targon deployments expose an OpenAI-compatible server, so the same sampler can talk to any of them.
 
 Use `ModelSampler` when you want the SDK to start local vLLM for you. Use `RemoteVLLMSampler` when you already have a server URL.
 
@@ -166,6 +166,7 @@ Deploy a server first when you want to reuse it or share it with another app. Pr
 - **[Local vLLM Inference](inference/local-vllm.md)**
 - **[RunPod vLLM Inference](inference/runpod-vllm.md)**
 - **[Lium vLLM Inference](inference/lium-vllm.md)**
+- **[Targon vLLM Inference](inference/targon-vllm.md)**
 
 **Local vLLM**:
 
@@ -251,9 +252,10 @@ deployment = gradientsio.deploy_runpod(
 
 <img src="assets/section-what-to-read-next.svg" width="800" alt="What to read next">
 
-- **[Deployment](deployment.md)** — Overview of local, RunPod, and Lium deployment.
+- **[Deployment](deployment.md)** — Overview of local, RunPod, Lium, and Targon deployment.
 - **[Inference Parameters](inference/parameters.md)** — OpenAI-compatible request options.
 - **[Local vLLM Inference](inference/local-vllm.md)** — Sample from a local vLLM server.
 - **[RunPod vLLM Inference](inference/runpod-vllm.md)** — Sample from a RunPod vLLM server.
 - **[Lium vLLM Inference](inference/lium-vllm.md)** — Sample from a Lium vLLM server.
+- **[Targon vLLM Inference](inference/targon-vllm.md)** — Sample from a Targon vLLM server.
 - **[Scheduler](scheduler.md)** — Multi-iteration training across multiple datasets.

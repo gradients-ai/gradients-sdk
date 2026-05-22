@@ -474,6 +474,82 @@ def _log_deployment_url(details: DeploymentDetails) -> None:
     logger.warning("%s deployment server URL: %s", provider.title(), details.server_url)
 
 
+def _deployment_failure_message(details: DeploymentDetails) -> str | None:
+    pod = details.pod
+    if pod is None:
+        return None
+    signals = _collect_failure_signals(pod)
+    if not signals:
+        return None
+    provider = details.provider.value if isinstance(details.provider, DeploymentProvider) else str(details.provider)
+    return f"{provider.title()} deployment {details.id} failed while provisioning: {'; '.join(signals[:4])}"
+
+
+def _collect_failure_signals(value: Any, *, path: str = "", seen: set[int] | None = None) -> list[str]:
+    if value is None:
+        return []
+    seen = seen or set()
+    if id(value) in seen:
+        return []
+    seen.add(id(value))
+
+    if isinstance(value, dict):
+        signals: list[str] = []
+        for key, item in value.items():
+            key_path = f"{path}.{key}" if path else str(key)
+            signals.extend(_failure_signal_from_field(str(key), item, key_path))
+            if isinstance(item, (dict, list, tuple)):
+                signals.extend(_collect_failure_signals(item, path=key_path, seen=seen))
+        return _dedupe_signals(signals)
+
+    if isinstance(value, (list, tuple)):
+        signals = []
+        for index, item in enumerate(value):
+            signals.extend(_collect_failure_signals(item, path=f"{path}[{index}]", seen=seen))
+        return _dedupe_signals(signals)
+
+    if hasattr(value, "model_dump"):
+        try:
+            return _collect_failure_signals(value.model_dump(), path=path, seen=seen)
+        except Exception:
+            return []
+    return []
+
+
+def _failure_signal_from_field(key: str, value: Any, path: str) -> list[str]:
+    key_lower = key.lower()
+    if isinstance(value, str):
+        value_lower = value.lower()
+        failure_terms = (
+            "crashloop",
+            "back-off",
+            "backoff",
+            "failed",
+            "failure",
+            "error",
+            "oom",
+            "out of memory",
+            "exit code",
+            "exited",
+            "terminated",
+        )
+        if any(term in value_lower for term in failure_terms):
+            return [f"{path}={value}"]
+    if isinstance(value, int) and key_lower in {"exit_code", "exitcode", "exit_code"} and value != 0:
+        return [f"{path}={value}"]
+    return []
+
+
+def _dedupe_signals(signals: list[str]) -> list[str]:
+    deduped: list[str] = []
+    seen: set[str] = set()
+    for signal in signals:
+        if signal not in seen:
+            deduped.append(signal)
+            seen.add(signal)
+    return deduped
+
+
 def _port_from_pod(pod: RunPodPod) -> int:
     if pod.ports:
         first_port = pod.ports[0].split("/", 1)[0]

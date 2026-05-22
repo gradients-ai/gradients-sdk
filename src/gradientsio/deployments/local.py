@@ -50,12 +50,13 @@ class LocalVLLMDeployment:
     def server_url(self) -> str:
         return self.details.server_url
 
-    def sampler(self, *, timeout: float = 60.0) -> RemoteVLLMSampler:
+    def sampler(self, *, timeout: float = 60.0, verify_ssl: bool = True) -> RemoteVLLMSampler:
         return RemoteVLLMSampler(
             base_url=self.server_url,
             model=self.model_name,
             api_key=self.inference_api_key,
             timeout=timeout,
+            verify_ssl=verify_ssl,
         )
 
     def wait_ready(

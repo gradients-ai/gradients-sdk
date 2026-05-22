@@ -199,6 +199,7 @@ The SDK automatically retries safe requests (GET, HEAD, OPTIONS) on transient fa
 | `GRADIENTS_SESSION_TOKEN` | No | Session token — only needed for account balance and deposit operations |
 | `RUNPOD_API_KEY` | For RunPod deployment | RunPod API key used by `deploy_runpod()`; read from the environment only |
 | `LIUM_API_KEY` | For Lium deployment | Lium API key used by `deploy_lium()`; read from the environment only |
+| `TARGON_API_KEY` | For Targon deployment | Targon API key used by `deploy_targon()`; read from the environment for app reuse and deletion |
 
 The API key can also be passed directly to the client:
 

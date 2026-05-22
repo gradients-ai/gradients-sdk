@@ -17,6 +17,7 @@ from gradientsio.deployments import DeploymentClient
 from gradientsio.deployments import LiumDeployment
 from gradientsio.deployments import LocalVLLMDeployment
 from gradientsio.deployments import RunPodDeployment
+from gradientsio.deployments import TargonDeployment
 from gradientsio.performance import PerformanceClient
 from gradientsio.scheduler import SchedulerClient
 from gradientsio.tasks import TasksClient
@@ -95,6 +96,9 @@ class GradientsClient:
 
     def deploy_lium(self, **kwargs: Any) -> LiumDeployment:
         return self.deployments.deploy_lium(**kwargs)
+
+    def deploy_targon(self, **kwargs: Any) -> TargonDeployment:
+        return self.deployments.deploy_targon(**kwargs)
 
     def deploy_local_vllm(self, **kwargs: Any) -> LocalVLLMDeployment:
         return self.deployments.deploy_local_vllm(**kwargs)

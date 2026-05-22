@@ -16,6 +16,7 @@ from gradientsio.deployments.common import _build_vllm_env
 from gradientsio.deployments.common import _build_vllm_start_cmd
 from gradientsio.deployments.common import _default_gpu_count
 from gradientsio.deployments.common import _default_model_name
+from gradientsio.deployments.common import _deployment_failure_message
 from gradientsio.deployments.common import _deployment_key
 from gradientsio.deployments.common import _docker_image_name
 from gradientsio.deployments.common import _docker_image_tag
@@ -83,12 +84,13 @@ class LiumDeployment:
     def delete(self) -> None:
         self._deployments.delete_lium(self.id)
 
-    def sampler(self, *, timeout: float = 60.0) -> RemoteVLLMSampler:
+    def sampler(self, *, timeout: float = 60.0, verify_ssl: bool = True) -> RemoteVLLMSampler:
         return RemoteVLLMSampler(
             base_url=self.server_url,
             model=self.model_name,
             api_key=self.inference_api_key,
             timeout=timeout,
+            verify_ssl=verify_ssl,
         )
 
     def wait_ready(
@@ -110,6 +112,10 @@ class LiumDeployment:
             if details.is_terminal:
                 spinner.finish()
                 raise APIError(f"Lium deployment {self.id} reached terminal status {details.status}")
+            failure_message = _deployment_failure_message(details)
+            if failure_message:
+                spinner.finish()
+                raise APIError(failure_message)
 
             if timeout is not None and time.monotonic() - started_at >= timeout:
                 spinner.finish()

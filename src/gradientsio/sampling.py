@@ -304,13 +304,14 @@ class RemoteVLLMSampler:
         model: str,
         api_key: str | None = None,
         timeout: float | httpx.Timeout = 60.0,
+        verify_ssl: bool = True,
         http_client: httpx.Client | None = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.api_key = api_key
         self._owns_client = http_client is None
-        self._client = http_client or httpx.Client(timeout=timeout)
+        self._client = http_client or httpx.Client(timeout=timeout, verify=verify_ssl)
 
     def close(self) -> None:
         if self._owns_client:

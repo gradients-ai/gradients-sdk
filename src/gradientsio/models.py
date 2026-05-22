@@ -72,6 +72,7 @@ class DeploymentProvider(str, Enum):
     RUNPOD = "runpod"
     CHUTES = "chutes"
     LIUM = "lium"
+    TARGON = "targon"
 
 
 class DeploymentStatus(str, Enum):
@@ -140,6 +141,38 @@ class LiumSshKey(SDKModel):
     id: str | None = None
     name: str | None = None
     public_key: str
+
+
+class TargonProject(SDKModel):
+    uid: str
+    name: str
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+
+
+class TargonApp(SDKModel):
+    uid: str
+    name: str
+    project_id: str | None = None
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+    status: str | None = None
+    web_url: str | None = None
+    url: str | None = None
+    endpoint_url: str | None = None
+    message: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+    @property
+    def normalized_status(self) -> DeploymentStatus:
+        status = str(self.status or "").lower()
+        if status in {"running", "active", "ready", "deployed", "healthy"}:
+            return DeploymentStatus.RUNNING
+        if status in {"deleted", "failed", "error", "terminated", "stopped", "crashloopbackoff"}:
+            return DeploymentStatus.TERMINATED
+        if status in {"pending", "building", "deploying", "starting", "initializing"}:
+            return DeploymentStatus.PENDING
+        return DeploymentStatus.UNKNOWN
 
 
 ACTIVE_TASK_STATUSES = {
@@ -347,7 +380,7 @@ class DeploymentDetails(SDKModel):
     lora: str | None = None
     status: DeploymentStatus | str = DeploymentStatus.UNKNOWN
     server_url: str
-    pod: RunPodPod | LiumPod | None = None
+    pod: RunPodPod | LiumPod | TargonApp | None = None
 
     @property
     def is_running(self) -> bool:

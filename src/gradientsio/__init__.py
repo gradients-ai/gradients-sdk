@@ -6,9 +6,11 @@ from gradientsio.deployments import DeploymentClient
 from gradientsio.deployments import LiumDeployment
 from gradientsio.deployments import LocalVLLMDeployment
 from gradientsio.deployments import RunPodDeployment
+from gradientsio.deployments import TargonDeployment
 from gradientsio.deployments import deploy_lium
 from gradientsio.deployments import deploy_local_vllm
 from gradientsio.deployments import deploy_runpod
+from gradientsio.deployments import deploy_targon
 from gradientsio.errors import APIError
 from gradientsio.errors import AuthenticationError
 from gradientsio.errors import AuthorizationError
@@ -69,6 +71,7 @@ __all__ = [
     "RunPodDeploymentRequest",
     "RunPodPod",
     "SchedulerDataset",
+    "TargonDeployment",
     "TaskFailed",
     "TaskStatus",
     "TaskTimeout",
@@ -78,5 +81,6 @@ __all__ = [
     "deploy_lium",
     "deploy_local_vllm",
     "deploy_runpod",
+    "deploy_targon",
     "load_dataset_rows",
 ]
